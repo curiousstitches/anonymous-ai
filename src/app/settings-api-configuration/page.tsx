@@ -1,0 +1,11 @@
+import React from 'react';
+import AppLayout from '@/components/AppLayout';
+import SettingsScreen from './components/SettingsScreen';
+
+export default function SettingsPage() {
+  return (
+    <AppLayout>
+      <SettingsScreen />
+    </AppLayout>
+  );
+}
