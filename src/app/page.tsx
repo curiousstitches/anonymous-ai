@@ -1,11 +1,26 @@
-import React from 'react';
-import AppLayout from '@/components/AppLayout';
-import ChatInterface from './components/ChatInterface';
+'use client';
 
-export default function ChatPage() {
+import { useEffect, useState } from 'react';
+import Header from '@/components/Header';
+import Hero from '@/components/Hero';
+import Features from '@/components/Features';
+import Footer from '@/components/Footer';
+
+export default function Home() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <AppLayout>
-      <ChatInterface />
-    </AppLayout>
+    <main className="min-h-screen bg-white dark:bg-slate-950">
+      <Header />
+      <Hero />
+      <Features />
+      <Footer />
+    </main>
   );
 }
