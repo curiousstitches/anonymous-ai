@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import '../styles/globals.css';
 
@@ -10,13 +10,17 @@ export const metadata: Metadata = {
     'CodePilot builds complete, runnable code for you. Describe your app and get every file generated instantly, powered by Puter AI — free, no API key required.',
   keywords: ['AI', 'code builder', 'code generator', 'Puter AI', 'development', 'scaffold'],
   authors: [{ name: 'CodePilot Team' }],
-  viewport: 'width=device-width, initial-scale=1.0',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://codepilot.dev',
+    url: 'https://happyappzai.com',
     siteName: 'CodePilot',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
