@@ -6,6 +6,8 @@ import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import Footer from '@/components/Footer';
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   const [mounted, setMounted] = useState(false);
 
