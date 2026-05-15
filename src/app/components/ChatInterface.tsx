@@ -1,16 +1,19 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { PanelLeft, Zap, AlertTriangle, BarChart3, Plus, Bell, X,  } from 'lucide-react';
+import { PanelLeft, Zap, AlertTriangle, BarChart3, Plus, Bell, X, MessageSquare, GitBranch, Code } from 'lucide-react';
 import { useChat } from '@/lib/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
 import { conversationService, Conversation } from '@/lib/services/conversationService';
 import ConversationSidebar from './ConversationSidebar';
 import ChatMessage from './ChatMessage';
 import ChatInputBar, { AttachedFile } from './ChatInputBar';
-import { getPuterStreamingCompletion, PuterMessage } from '@/lib/ai/puterClient';
+import GitHubPanel from './GitHubPanel';
+import { getPuterStreamingCompletion, PuterMessage, initializePuter } from '@/lib/ai/puterClient';
 import { logEvent } from '@/lib/eventLog';
 import toast from 'react-hot-toast';
+
+type ActiveTab = 'chat' | 'github' | 'editor';
 
 interface ChatMsg {
   id: string;
@@ -38,10 +41,20 @@ interface UsageAlert {
 
 const SYSTEM_MESSAGE = {
   role: 'system' as const,
-  content: `You are CodePilot, an expert AI coding assistant. You help developers with code questions, debugging, architecture decisions, and best practices. 
-When providing code examples, use proper markdown code blocks with language identifiers.
-Be concise, accurate, and practical. Focus on production-quality solutions.
-When file context is provided, analyze it carefully and reference specific parts in your response.`,
+  content: `You are CodePilot, a specialized AI coding assistant. You ONLY help with programming and software development tasks. This includes:
+- Writing, reviewing, debugging, and refactoring code
+- Explaining code logic, algorithms, and data structures
+- Generating code snippets, functions, classes, and entire files
+- Fixing bugs and errors in code
+- Suggesting code improvements and best practices
+- Helping with version control (git commands, GitHub workflows)
+- Answering questions about programming languages, frameworks, libraries, and tools
+- Generating boilerplate, templates, and project scaffolding
+
+If the user asks anything that is NOT related to coding or software development, respond ONLY with:
+"I'm CodePilot, a coding-only assistant. I can only help with programming and software development tasks. Please ask me a coding question!"
+
+Do NOT provide general information, answer trivia, discuss non-technical topics, or act as a general-purpose assistant under any circumstances.`,
 };
 
 function formatTime(date: Date): string {
@@ -108,10 +121,12 @@ export default function ChatInterface() {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loadingConversation, setLoadingConversation] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('gpt-5.4');
+  const [selectedModel, setSelectedModel] = useState('GPT-4o (Puter)');
   const [selectedLanguage, setSelectedLanguage] = useState('Auto-detect');
   const [isPuterStreaming, setIsPuterStreaming] = useState(false);
   const [usageAlerts, setUsageAlerts] = useState<UsageAlert[]>([]);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('chat');
+  const [initialMessage, setInitialMessage] = useState('');
   const alertedThresholdsRef = useRef<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const streamingMsgIdRef = useRef<string | null>(null);
@@ -130,6 +145,11 @@ export default function ChatInterface() {
   useEffect(() => {
     if (error) toast.error(error.message);
   }, [error]);
+
+  // ── Initialize Puter AI on mount ───────────────────────────────────────────
+  useEffect(() => {
+    initializePuter();
+  }, []);
 
   // ── Usage alert logic ──────────────────────────────────────────────────────
   const dismissAlert = useCallback((id: string) => {
@@ -460,10 +480,53 @@ export default function ChatInterface() {
   const activeConv = conversations.find((c) => c.id === activeConversationId);
   const tokenPct = Math.min((tokenCount / USAGE_LIMIT) * 100, 100);
 
+  const handleOpenInChat = (message: string) => {
+    setActiveTab('chat');
+    setInitialMessage(message);
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Main chat area — takes full height, sidebar stacks below on mobile */}
-      <div className="flex flex-1 min-h-0 overflow-hidden flex-col md:flex-row">
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 px-3 pt-2 pb-0 flex-shrink-0 border-b" style={{ borderColor: 'var(--border)', background: 'var(--card)' }}>
+        {([
+          { id: 'chat', label: 'Chat', icon: MessageSquare },
+          { id: 'github', label: 'GitHub', icon: GitBranch },
+          { id: 'editor', label: 'Editor', icon: Code },
+        ] as const).map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg transition-all duration-150 border-b-2 -mb-px ${
+              activeTab === id
+                ? 'border-purple-500 text-purple-400'
+                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600'
+            }`}
+          >
+            <Icon size={13} />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      {activeTab === 'github' && (
+        <div className="flex-1 overflow-auto p-4">
+          <GitHubPanel onOpenInChat={handleOpenInChat} />
+        </div>
+      )}
+      {activeTab === 'editor' && (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center" style={{ color: 'var(--muted-foreground)' }}>
+            <Code size={48} className="mx-auto mb-3 opacity-40" />
+            <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--foreground)' }}>Code Editor</h2>
+            <p className="text-sm">Coming Soon — integrated code editor will appear here</p>
+          </div>
+        </div>
+      )}
+
+      {/* Chat tab — hidden when other tabs active */}
+      <div className={`flex flex-1 min-h-0 overflow-hidden flex-col md:flex-row ${activeTab !== 'chat' ? 'hidden' : ''}`}>
         {/* Conversation history sidebar — on mobile: bottom drawer style, on desktop: left panel */}
         <ConversationSidebar
           open={convSidebarOpen}
@@ -687,10 +750,11 @@ export default function ChatInterface() {
               onStop={handleStop}
               onModelChange={setSelectedModel}
               onLanguageChange={setSelectedLanguage}
+              initialMessage={initialMessage}
             />
           </div>
         </div>
-      </div>
+      </div>{/* end chat tab wrapper */}
     </div>
   );
 }

@@ -25,6 +25,18 @@ async function getPuter(): Promise<any> {
   return puter;
 }
 
+/**
+ * Initialize Puter.js — loads the package and attaches `puter` to window.
+ * Safe to call multiple times; subsequent calls are no-ops.
+ */
+export async function initializePuter(): Promise<void> {
+  try {
+    await getPuter();
+  } catch (err) {
+    console.warn('[Puter] initialization failed:', err);
+  }
+}
+
 export interface PuterMessage {
   role: 'system' | 'user' | 'assistant';
   content: string | { type: string; [key: string]: unknown }[];

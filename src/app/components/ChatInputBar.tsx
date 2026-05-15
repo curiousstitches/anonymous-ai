@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   Send,
   Paperclip,
@@ -52,6 +52,7 @@ interface ChatInputBarProps {
   onStop: () => void;
   onModelChange?: (model: string) => void;
   onLanguageChange?: (language: string) => void;
+  initialMessage?: string;
 }
 
 async function fileToDataUri(file: File): Promise<string> {
@@ -69,15 +70,29 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
-export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChange, onLanguageChange }: ChatInputBarProps) {
+export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChange, onLanguageChange, initialMessage }: ChatInputBarProps) {
   const [input, setInput] = useState('');
-  const [selectedModel, setSelectedModel] = useState(models[0]);
+  const [selectedModel, setSelectedModel] = useState(models.find(m => m.id === 'model-puter-gpt4o') || models[0]);
   const [selectedLang, setSelectedLang] = useState(languages[0]);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Pre-fill from GitHub panel or other callers
+  useEffect(() => {
+    if (initialMessage) {
+      setInput(initialMessage);
+      setTimeout(() => textareaRef.current?.focus(), 50);
+    }
+  }, [initialMessage]);
+
+  // Notify parent of initial Puter model selection on mount
+  useEffect(() => {
+    onModelChange?.(selectedModel.label);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = useCallback(() => {
