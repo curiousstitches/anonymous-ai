@@ -1,25 +1,25 @@
-import { Zap, AlertCircle, BarChart3, Shield } from 'lucide-react';
+import { Hammer, FolderOpen, Download, Shield } from 'lucide-react';
 
 const features = [
   {
-    icon: Zap,
-    title: 'Lightning Fast',
-    description: 'Get code completions in milliseconds with our optimized AI engine.',
+    icon: Hammer,
+    title: 'Builder Mode',
+    description: 'Describe your app and CodePilot generates every file — complete, runnable, and production-ready. No snippets, no placeholders.',
   },
   {
-    icon: AlertCircle,
-    title: 'Error Detection',
-    description: 'Catch bugs before they happen with intelligent code analysis.',
+    icon: FolderOpen,
+    title: 'Full Project Scaffolds',
+    description: 'Get a complete file tree with package.json, configs, and all source files. One prompt, entire project.',
   },
   {
-    icon: BarChart3,
-    title: 'Code Analytics',
-    description: 'Understand your code quality with detailed metrics and insights.',
+    icon: Download,
+    title: 'Save Any File Instantly',
+    description: 'Every code block has a Save button. Download individual files directly from the chat with one click.',
   },
   {
     icon: Shield,
-    title: 'Secure & Private',
-    description: 'Your code stays private. We never store or share your data.',
+    title: 'Free via Puter AI',
+    description: 'Powered by Puter.js — access GPT-4o and Claude 3.5 Sonnet for free, no API key required, no credit card.',
   },
 ];
 
@@ -29,10 +29,10 @@ export default function Features() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            Powerful Features
+            Build Anything, Instantly
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Everything you need to accelerate your development workflow
+            CodePilot doesn’t just tell you how to code — it builds the code for you.
           </p>
         </div>
 

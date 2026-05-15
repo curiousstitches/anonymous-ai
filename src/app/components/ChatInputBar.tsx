@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useRef, useCallback } from 'react';
 import {
   Send,
@@ -15,28 +14,30 @@ import {
   X,
   FileText,
   Image as ImageIcon,
+  Hammer,
 } from 'lucide-react';
 
+// Puter GPT-4o is first — it becomes the auto-start default
 const models = [
-  { id: 'model-ollama', label: 'Ollama / LLaMA 3', icon: Cpu, color: '#10b981', provider: 'Self-hosted' },
-  { id: 'model-gpt4o', label: 'GPT-4o', icon: Brain, color: '#06b6d4', provider: 'OpenAI' },
-  { id: 'model-claude', label: 'Claude 3.5 Sonnet', icon: Zap, color: '#a78bfa', provider: 'Anthropic' },
-  { id: 'model-gemini', label: 'Gemini 1.5 Pro', icon: Globe, color: '#f59e0b', provider: 'Google' },
-  { id: 'model-puter-gpt4o', label: 'GPT-4o (Puter)', icon: Zap, color: '#22d3ee', provider: 'Puter · Free' },
-  { id: 'model-puter-gpt4omini', label: 'GPT-4o Mini (Puter)', icon: Zap, color: '#22d3ee', provider: 'Puter · Free' },
-  { id: 'model-puter-claude', label: 'Claude 3.5 Sonnet (Puter)', icon: Brain, color: '#22d3ee', provider: 'Puter · Free' },
+  { id: 'model-puter-gpt4o',     label: 'GPT-4o (Puter)',            icon: Zap,   color: '#22d3ee', provider: 'Puter · Free' },
+  { id: 'model-puter-gpt4omini', label: 'GPT-4o Mini (Puter)',       icon: Zap,   color: '#22d3ee', provider: 'Puter · Free' },
+  { id: 'model-puter-claude',    label: 'Claude 3.5 Sonnet (Puter)', icon: Brain, color: '#22d3ee', provider: 'Puter · Free' },
+  { id: 'model-gpt4o',           label: 'GPT-4o',                    icon: Brain, color: '#06b6d4', provider: 'OpenAI' },
+  { id: 'model-claude',          label: 'Claude 3.5 Sonnet',         icon: Zap,   color: '#a78bfa', provider: 'Anthropic' },
+  { id: 'model-gemini',          label: 'Gemini 1.5 Pro',            icon: Globe, color: '#f59e0b', provider: 'Google' },
+  { id: 'model-ollama',          label: 'Ollama / LLaMA 3',          icon: Cpu,   color: '#10b981', provider: 'Self-hosted' },
 ];
 
 const languages = [
-  { id: 'lang-auto', label: 'Auto-detect' },
-  { id: 'lang-python', label: 'Python' },
+  { id: 'lang-auto',       label: 'Auto-detect' },
   { id: 'lang-typescript', label: 'TypeScript' },
   { id: 'lang-javascript', label: 'JavaScript' },
-  { id: 'lang-rust', label: 'Rust' },
-  { id: 'lang-go', label: 'Go' },
-  { id: 'lang-java', label: 'Java' },
-  { id: 'lang-sql', label: 'SQL' },
-  { id: 'lang-bash', label: 'Bash' },
+  { id: 'lang-python',     label: 'Python' },
+  { id: 'lang-rust',       label: 'Rust' },
+  { id: 'lang-go',         label: 'Go' },
+  { id: 'lang-java',       label: 'Java' },
+  { id: 'lang-sql',        label: 'SQL' },
+  { id: 'lang-bash',       label: 'Bash' },
 ];
 
 export interface AttachedFile {
@@ -52,6 +53,8 @@ interface ChatInputBarProps {
   onStop: () => void;
   onModelChange?: (model: string) => void;
   onLanguageChange?: (language: string) => void;
+  builderMode?: boolean;
+  onBuilderModeChange?: (enabled: boolean) => void;
 }
 
 async function fileToDataUri(file: File): Promise<string> {
@@ -69,8 +72,17 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
-export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChange, onLanguageChange }: ChatInputBarProps) {
+export default function ChatInputBar({
+  onSend,
+  isStreaming,
+  onStop,
+  onModelChange,
+  onLanguageChange,
+  builderMode = false,
+  onBuilderModeChange,
+}: ChatInputBarProps) {
   const [input, setInput] = useState('');
+  // Default to first model in list — Puter GPT-4o
   const [selectedModel, setSelectedModel] = useState(models[0]);
   const [selectedLang, setSelectedLang] = useState(languages[0]);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
@@ -106,23 +118,17 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-
     const validTypes = [
       'image/jpeg', 'image/png', 'image/gif', 'image/webp',
       'application/pdf',
       'text/plain', 'text/markdown', 'text/javascript', 'text/typescript',
       'application/json',
     ];
-
-    const validFiles = files.filter(f => {
-      const isValid = validTypes.includes(f.type) || f.name.match(/\.(ts|tsx|js|jsx|py|go|rs|java|sql|sh|md|txt|json|yaml|yml|env|config)$/i);
-      return isValid;
-    });
-
-    if (validFiles.length === 0) {
-      return;
-    }
-
+    const validFiles = files.filter(f =>
+      validTypes.includes(f.type) ||
+      f.name.match(/\.(ts|tsx|js|jsx|py|go|rs|java|sql|sh|md|txt|json|yaml|yml|env|config)$/i)
+    );
+    if (!validFiles.length) return;
     setIsProcessingFile(true);
     try {
       const processed: AttachedFile[] = await Promise.all(
@@ -146,12 +152,16 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
 
   const isImage = (type: string) => type.startsWith('image/');
 
+  const placeholder = builderMode
+    ? 'Describe the app or feature to build (e.g. "a REST API with Express + TypeScript for a todo app")…'
+    : 'Ask a coding question, paste code to review, or describe what you want to build…';
+
   return (
     <div
       className="border-t px-4 py-3"
       style={{ borderColor: 'var(--border)', background: 'var(--card)' }}
     >
-      {/* Model + Language selectors */}
+      {/* Toolbar: Model + Language + Builder Mode */}
       <div className="flex items-center gap-2 mb-2.5 flex-wrap">
         {/* Model selector */}
         <div className="relative">
@@ -169,10 +179,40 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
           </button>
           {showModelDropdown && (
             <div
-              className="absolute bottom-full left-0 mb-2 w-56 rounded-xl border py-1 z-50 card-glow"
+              className="absolute bottom-full left-0 mb-2 w-60 rounded-xl border py-1 z-50 card-glow"
               style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
             >
-              {models.map((m) => {
+              <p className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-foreground)' }}>
+                Free — no API key
+              </p>
+              {models.filter(m => m.provider.startsWith('Puter')).map((m) => {
+                const MIcon = m.icon;
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => { setSelectedModel(m); setShowModelDropdown(false); onModelChange?.(m.label); }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors"
+                    style={{
+                      color: selectedModel.id === m.id ? m.color : 'var(--foreground)',
+                      background: selectedModel.id === m.id ? `${m.color}12` : 'transparent',
+                    }}
+                  >
+                    <MIcon size={13} style={{ color: m.color }} />
+                    <div className="text-left">
+                      <p className="font-medium">{m.label}</p>
+                      <p style={{ color: 'var(--muted-foreground)' }}>{m.provider}</p>
+                    </div>
+                    {selectedModel.id === m.id && (
+                      <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded" style={{ background: `${m.color}20`, color: m.color }}>Active</span>
+                    )}
+                  </button>
+                );
+              })}
+              <div className="border-t my-1" style={{ borderColor: 'var(--border)' }} />
+              <p className="px-3 pt-1 pb-0.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--muted-foreground)' }}>
+                API key required
+              </p>
+              {models.filter(m => !m.provider.startsWith('Puter')).map((m) => {
                 const MIcon = m.icon;
                 return (
                   <button
@@ -229,9 +269,24 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
           )}
         </div>
 
-        <div className="flex-1" />
+        {/* Builder Mode toggle */}
+        <button
+          onClick={() => onBuilderModeChange?.(!builderMode)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 active:scale-95"
+          style={
+            builderMode
+              ? { background: 'rgba(124,58,237,0.18)', color: '#a78bfa', border: '1px solid rgba(124,58,237,0.4)' }
+              : { background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }
+          }
+          title="Toggle Builder Mode — AI generates complete, runnable files"
+        >
+          <Hammer size={12} />
+          Builder
+          {builderMode && <span className="w-1.5 h-1.5 rounded-full bg-purple-400 ml-0.5" />}
+        </button>
 
-        <span className="text-xs font-mono" style={{ color: 'var(--muted-foreground)' }}>
+        <div className="flex-1" />
+        <span className="text-xs font-mono hidden sm:block" style={{ color: 'var(--muted-foreground)' }}>
           Shift+Enter for newline
         </span>
       </div>
@@ -273,11 +328,11 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
       <div
         className="flex items-end gap-2 rounded-xl border p-2 transition-all duration-150"
         style={{
-          borderColor: 'var(--border)',
+          borderColor: builderMode ? 'rgba(124,58,237,0.5)' : 'var(--border)',
           background: 'var(--input)',
+          boxShadow: builderMode ? '0 0 0 1px rgba(124,58,237,0.2)' : 'none',
         }}
       >
-        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -287,7 +342,6 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
           className="hidden"
           aria-label="Attach files"
         />
-
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={isProcessingFile}
@@ -296,7 +350,7 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
             color: attachedFiles.length > 0 ? '#a78bfa' : 'var(--muted-foreground)',
             background: attachedFiles.length > 0 ? 'rgba(124,58,237,0.1)' : 'transparent',
           }}
-          title="Attach file or project context (images, PDFs, code files)"
+          title="Attach file or project context"
           aria-label="Attach file"
         >
           {isProcessingFile ? (
@@ -305,13 +359,12 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
             <Paperclip size={16} />
           )}
         </button>
-
         <textarea
           ref={textareaRef}
           value={input}
           onChange={handleTextareaChange}
           onKeyDown={handleKeyDown}
-          placeholder="Ask a coding question, paste code to review, or describe what you want to build..."
+          placeholder={placeholder}
           rows={1}
           className="flex-1 resize-none bg-transparent text-sm outline-none scrollbar-thin"
           style={{
@@ -324,7 +377,6 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
           disabled={isStreaming}
           aria-label="Chat input"
         />
-
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             className="p-2 rounded-lg transition-all duration-150 active:scale-95"
@@ -334,7 +386,6 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
           >
             <Mic size={16} />
           </button>
-
           {isStreaming ? (
             <button
               onClick={onStop}
@@ -352,20 +403,21 @@ export default function ChatInputBar({ onSend, isStreaming, onStop, onModelChang
               className="p-2 rounded-lg transition-all duration-150 active:scale-95"
               style={
                 input.trim() || attachedFiles.length > 0
-                  ? { background: 'var(--primary)', color: 'white' }
+                  ? { background: builderMode ? 'rgba(124,58,237,0.9)' : 'var(--primary)', color: 'white' }
                   : { background: 'var(--muted)', color: 'var(--muted-foreground)', cursor: 'not-allowed' }
               }
-              title="Send message (Enter)"
-              aria-label="Send message"
+              title={builderMode ? 'Build it (Enter)' : 'Send message (Enter)'}
+              aria-label={builderMode ? 'Build' : 'Send message'}
             >
-              <Send size={16} />
+              {builderMode ? <Hammer size={16} /> : <Send size={16} />}
             </button>
           )}
         </div>
       </div>
-
       <p className="text-xs text-center mt-2" style={{ color: 'var(--muted-foreground)' }}>
-        CodePilot may produce incorrect code. Always review before deploying to production.
+        {builderMode
+          ? '🔨 Builder Mode — CodePilot generates complete, runnable files for your project.'
+          : 'CodePilot builds real code. Always review before deploying to production.'}
       </p>
     </div>
   );

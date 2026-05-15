@@ -1,7 +1,6 @@
 'use client';
-
 import React, { useState } from 'react';
-import { Copy, Check, Play, Download } from 'lucide-react';
+import { Copy, Check, Download } from 'lucide-react';
 
 interface CodeBlockProps {
   code: string;
@@ -10,16 +9,50 @@ interface CodeBlockProps {
 }
 
 const langColors: Record<string, string> = {
-  python: '#10b981',
+  python:     '#10b981',
   typescript: '#06b6d4',
   javascript: '#f59e0b',
-  sql: '#a78bfa',
-  rust: '#ef4444',
-  bash: '#64748b',
-  yaml: '#f59e0b',
-  json: '#94a3b8',
+  sql:        '#a78bfa',
+  rust:       '#ef4444',
+  bash:       '#64748b',
+  shell:      '#64748b',
+  yaml:       '#f59e0b',
+  json:       '#94a3b8',
   dockerfile: '#64748b',
+  go:         '#22d3ee',
+  java:       '#f97316',
+  css:        '#ec4899',
+  html:       '#f97316',
+  tsx:        '#06b6d4',
+  jsx:        '#f59e0b',
 };
+
+const langExtensions: Record<string, string> = {
+  python:     'py',
+  typescript: 'ts',
+  tsx:        'tsx',
+  javascript: 'js',
+  jsx:        'jsx',
+  sql:        'sql',
+  rust:       'rs',
+  bash:       'sh',
+  shell:      'sh',
+  yaml:       'yaml',
+  json:       'json',
+  dockerfile: 'Dockerfile',
+  go:         'go',
+  java:       'java',
+  css:        'css',
+  html:       'html',
+};
+
+function inferFilename(language: string, filename?: string): string {
+  if (filename) return filename;
+  const ext = langExtensions[language.toLowerCase()];
+  if (!ext) return `code.txt`;
+  if (ext === 'Dockerfile') return 'Dockerfile';
+  return `code.${ext}`;
+}
 
 export default function CodeBlock({ code, language, filename }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
@@ -30,7 +63,19 @@ export default function CodeBlock({ code, language, filename }: CodeBlockProps) 
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleDownload = () => {
+    const name = inferFilename(language, filename);
+    const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const color = langColors[language.toLowerCase()] || '#94a3b8';
+  const displayName = filename || inferFilename(language, filename);
 
   return (
     <div className="code-block my-3 overflow-hidden">
@@ -46,26 +91,19 @@ export default function CodeBlock({ code, language, filename }: CodeBlockProps) 
           >
             {language}
           </span>
-          {filename && (
-            <span className="text-xs font-mono" style={{ color: 'var(--muted-foreground)' }}>
-              {filename}
-            </span>
-          )}
+          <span className="text-xs font-mono" style={{ color: 'var(--muted-foreground)' }}>
+            {displayName}
+          </span>
         </div>
         <div className="flex items-center gap-1">
           <button
-            className="p-1.5 rounded-md transition-all duration-150 active:scale-95"
-            style={{ color: 'var(--muted-foreground)' }}
-            title="Download code"
+            onClick={handleDownload}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 active:scale-95"
+            style={{ background: 'var(--muted)', color: 'var(--muted-foreground)' }}
+            title={`Download ${displayName}`}
           >
-            <Download size={13} />
-          </button>
-          <button
-            className="p-1.5 rounded-md transition-all duration-150 active:scale-95"
-            style={{ color: 'var(--muted-foreground)' }}
-            title="Run in terminal"
-          >
-            <Play size={13} />
+            <Download size={12} />
+            Save
           </button>
           <button
             onClick={handleCopy}
@@ -81,7 +119,6 @@ export default function CodeBlock({ code, language, filename }: CodeBlockProps) 
           </button>
         </div>
       </div>
-
       {/* Code */}
       <div className="overflow-x-auto">
         <pre className="p-4 text-sm leading-relaxed" style={{ margin: 0, background: '#0a0c10' }}>

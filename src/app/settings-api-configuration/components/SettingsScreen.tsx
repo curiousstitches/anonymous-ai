@@ -20,7 +20,7 @@ const providers = [
     description: 'Run LLaMA, Mistral, CodeLlama locally — no API key needed',
     icon: '🦙',
     color: '#10b981',
-    isActive: true,
+    isActive: false,
     isConnected: true,
     models: ['llama3.1:70b', 'llama3.1:8b', 'codellama:34b', 'mistral:7b', 'deepseek-coder:6.7b'],
     defaultModel: 'llama3.1:70b',
@@ -34,7 +34,7 @@ const providers = [
     description: 'Free unlimited access to GPT-4o, Claude 3.5 & more — no API key required',
     icon: '🆓',
     color: '#22d3ee',
-    isActive: false,
+    isActive: true,
     isConnected: true,
     models: ['gpt-4o', 'gpt-4o-mini', 'claude-3-5-sonnet'],
     defaultModel: 'gpt-4o',
@@ -135,7 +135,7 @@ function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean
 
 export default function SettingsScreen() {
   const [activeCategory, setActiveCategory] = useState('cat-ai');
-  const [activeProvider, setActiveProvider] = useState('ollama');
+  const [activeProvider, setActiveProvider] = useState('puter');
   const [preferences, setPreferences] = useState(
     Object.fromEntries(editorPreferences.map((p) => [p.id, p.enabled]))
   );
@@ -210,14 +210,14 @@ export default function SettingsScreen() {
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
                   style={{ background: 'rgba(16,185,129,0.15)' }}
                 >
-                  🦙
+                  🆓
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
-                    Ollama (Self-hosted) is your active backend
+                    Puter.js (Free) is your active backend
                   </p>
                   <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--muted-foreground)' }}>
-                    Running llama3.1:70b · Connected to localhost:11434 · No API costs
+                    Running gpt-4o · No API key required · Free unlimited access
                   </p>
                 </div>
                 <div className="ml-auto flex-shrink-0">

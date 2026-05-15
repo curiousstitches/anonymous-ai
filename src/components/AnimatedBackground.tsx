@@ -245,7 +245,7 @@ export default function AnimatedBackground() {
       }
 
       const opacity = customization.bgOpacity;
-      const speed = customization.bgAnimationSpeed || 1;
+      const speed = customization.animationSpeed || 1;
 
       if (type === 'aurora') {
         drawAurora(ctx, canvas, timeRef.current, customization.primaryColor, customization.accentColor, opacity);

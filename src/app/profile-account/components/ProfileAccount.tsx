@@ -152,7 +152,7 @@ export default function ProfileAccount() {
   };
 
   const togglePref = (id: string) => {
-    setPrefs((prev) => ({ ...prev, [id]: !prev[id] }));
+    setPrefs((prev) => ({ ...prev, [id]: !(prev as Record<string, boolean>)[id] }));
   };
 
   return (

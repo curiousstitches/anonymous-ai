@@ -5,10 +5,10 @@ import '../styles/globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CodePilot - Your AI Development Assistant',
+  title: 'CodePilot - AI Code Builder powered by Puter',
   description:
-    'CodePilot is an intelligent AI assistant that helps you code faster and smarter.',
-  keywords: ['AI', 'coding', 'development', 'assistant'],
+    'CodePilot builds complete, runnable code for you. Describe your app and get every file generated instantly, powered by Puter AI — free, no API key required.',
+  keywords: ['AI', 'code builder', 'code generator', 'Puter AI', 'development', 'scaffold'],
   authors: [{ name: 'CodePilot Team' }],
   viewport: 'width=device-width, initial-scale=1.0',
   openGraph: {
