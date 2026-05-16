@@ -1,4 +1,4 @@
-import { Bot, Boxes, FileCode2, Github, ImageIcon, Layers3, Link2, Mic2, Sparkles, Wand2 } from 'lucide-react';
+import { Bot, Boxes, FileCode2, GitBranch, ImageIcon, Layers3, Link2, Mic2, Sparkles, Wand2 } from 'lucide-react';
 
 export const freeEngineCards = [
   {
@@ -134,7 +134,7 @@ export const startModes = [
   { title: 'Start from an image', detail: 'Turn screenshots, mockups, or sketches into code.', icon: ImageIcon },
   { title: 'Start from a file', detail: 'Upload requirements, specs, docs, or code snippets.', icon: FileCode2 },
   { title: 'Start from a link', detail: 'Use a website or doc link as context for a remake.', icon: Link2 },
-  { title: 'Start from a GitHub repo', detail: 'Analyze a repo, suggest changes, and plan edits.', icon: Github },
+  { title: 'Start from a GitHub repo', detail: 'Analyze a repo, suggest changes, and plan edits.', icon: GitBranch },
   { title: 'Start from a template', detail: 'Choose a fast-launch blueprint and customize it.', icon: Layers3 },
 ];
 
@@ -226,13 +226,14 @@ export const landingHighlights = [
   {
     title: 'GitHub-first repo workflows',
     description: 'Repo analysis, issue-aware tasks, branch thinking, and handoff language are treated as a core feature.',
-    icon: Github,
+    icon: GitBranch,
   },
   {
     title: 'Start from anything',
     description: 'Ideas, screenshots, files, links, or templates can all become the launch point for the build.',
     icon: Boxes,
   },
+
   {
     title: 'Themes with personality',
     description: 'Neon, 3D pop, Zelda-inspired, simple, and premium adult-night themes are all part of the experience.',
