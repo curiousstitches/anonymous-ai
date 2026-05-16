@@ -1,8 +1,10 @@
 'use client';
 
-import { AudioLines, Bot, GitBranch, Mic2, Sparkles, Wand2 } from 'lucide-react';
+import Link from 'next/link';
+import { AudioLines, Bot, CreditCard, GitBranch, Mic2, Sparkles, Users, Wand2 } from 'lucide-react';
 
 import ChatInterface from '@/app/components/ChatInterface';
+
 import { useTheme } from '@/contexts/ThemeContext';
 import { githubWorkflows, workspacePrompts } from '@/lib/studio-data';
 import { MetricCard, Panel, Pill, SectionHeader } from './StudioPrimitives';
@@ -71,12 +73,52 @@ export default function WorkspaceHome() {
         </Panel>
       </div>
 
+      <div className="grid gap-4 md:grid-cols-3">
+        {[
+          {
+            href: '/github',
+            title: 'GitHub workflow center',
+            text: 'Manage repositories, issue cards, branches, and release batches.',
+            icon: GitBranch,
+            tone: 'text-cyan-300',
+          },
+          {
+            href: '/team-workspace',
+            title: 'Team workspace',
+            text: 'Invite collaborators, send team chat updates, and track shared changes.',
+            icon: Users,
+            tone: 'text-fuchsia-200',
+          },
+          {
+            href: '/billing-center',
+            title: 'Billing center',
+            text: 'Activate premium lanes, unlock adult themes, and review billing events.',
+            icon: CreditCard,
+            tone: 'text-amber-200',
+          },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link key={item.href} href={item.href}>
+              <Panel className="h-full p-5 transition hover:border-white/20 hover:bg-white/10">
+                <div className="mb-4 flex items-center gap-3">
+                  <Icon className={`h-4 w-4 ${item.tone}`} />
+                  <p className="text-sm font-medium text-white">{item.title}</p>
+                </div>
+                <p className="text-sm leading-6 text-slate-400">{item.text}</p>
+              </Panel>
+            </Link>
+          );
+        })}
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
         <Panel className="p-5">
           <div className="mb-3 flex items-center gap-3">
             <Sparkles className="h-4 w-4 text-cyan-300" />
             <p className="text-sm font-medium text-white">Motion intensity</p>
           </div>
+
           <div className="flex flex-wrap gap-2">
             {(['low', 'medium', 'high'] as const).map((value) => (
               <button

@@ -98,7 +98,14 @@ function mapBatch(row: any): GitHubBatch {
 
 export const githubService = {
   subscribe(userId: string, onChange: () => void) {
-    return subscribeToLocalStore(localReposKey(userId), onChange);
+    const unsubscribeRepos = subscribeToLocalStore(localReposKey(userId), onChange);
+    const unsubscribeIssues = subscribeToLocalStore(localIssuesKey(userId), onChange);
+    const unsubscribeBatches = subscribeToLocalStore(localBatchesKey(userId), onChange);
+    return () => {
+      unsubscribeRepos();
+      unsubscribeIssues();
+      unsubscribeBatches();
+    };
   },
 
   async getDashboard() {

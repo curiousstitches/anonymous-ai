@@ -73,9 +73,11 @@ export const billingService = {
   subscribe(userId: string, onChange: () => void) {
     const unsubscribeProfile = subscribeToLocalStore(profileKey(userId), onChange);
     const unsubscribeUnlocks = subscribeToLocalStore(unlockKey(userId), onChange);
+    const unsubscribeEvents = subscribeToLocalStore(eventKey(userId), onChange);
     return () => {
       unsubscribeProfile();
       unsubscribeUnlocks();
+      unsubscribeEvents();
     };
   },
 

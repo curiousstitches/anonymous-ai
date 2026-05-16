@@ -20,8 +20,11 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const navigation = [
   { href: '/workspace', label: 'Workspace', icon: Wand2 },
+  { href: '/github', label: 'GitHub', icon: GitBranch },
+  { href: '/team-workspace', label: 'Team Workspace', icon: Sparkles },
   { href: '/templates', label: 'Templates', icon: Layers3 },
   { href: '/providers', label: 'Providers', icon: Bot },
+  { href: '/billing-center', label: 'Billing', icon: WalletCards },
   { href: '/tutorials', label: 'Tutorials', icon: BookOpen },
   { href: '/pricing', label: 'Paid APIs', icon: WalletCards },
   { href: '/theme-dashboard', label: 'Themes', icon: Palette },

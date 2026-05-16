@@ -18,6 +18,9 @@ function injectTokenFromHeader(request: NextRequest): void {
 
 const PROTECTED_ROUTES = [
   '/workspace',
+  '/github',
+  '/team-workspace',
+  '/billing-center',
   '/usage-dashboard',
   '/project-context-manager',
   '/settings-api-configuration',

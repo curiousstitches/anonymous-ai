@@ -13,6 +13,9 @@ interface AppLayoutProps {
 
 const PAGE_TITLES: Record<string, string> = {
   '/workspace': 'AI Builder Workspace',
+  '/github': 'GitHub Workflow Center',
+  '/team-workspace': 'Team Workspace',
+  '/billing-center': 'Billing Center',
   '/templates': 'Template Library',
   '/providers': 'Free & Paid Providers',
   '/tutorials': 'New User Tutorial',

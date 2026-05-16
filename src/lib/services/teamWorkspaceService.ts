@@ -97,10 +97,14 @@ function mapChange(row: any): TeamChange {
 export const teamWorkspaceService = {
   subscribe(userId: string, onChange: () => void) {
     const unsubscribeWorkspaces = subscribeToLocalStore(workspaceKey(userId), onChange);
+    const unsubscribeMembers = subscribeToLocalStore(memberKey(userId), onChange);
     const unsubscribeMessages = subscribeToLocalStore(messageKey(userId), onChange);
+    const unsubscribeChanges = subscribeToLocalStore(changeKey(userId), onChange);
     return () => {
       unsubscribeWorkspaces();
+      unsubscribeMembers();
       unsubscribeMessages();
+      unsubscribeChanges();
     };
   },
 
