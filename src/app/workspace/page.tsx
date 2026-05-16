@@ -1,12 +1,12 @@
 import AppLayout from '@/components/AppLayout';
-import ThemeDashboard from './components/ThemeDashboard';
+import WorkspaceHome from '@/components/studio/WorkspaceHome';
 
 export const dynamic = 'force-dynamic';
 
-export default function ThemeDashboardPage() {
+export default function WorkspacePage() {
   return (
     <AppLayout>
-      <ThemeDashboard />
+      <WorkspaceHome />
     </AppLayout>
   );
 }

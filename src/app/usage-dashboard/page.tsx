@@ -1,13 +1,12 @@
-import React from 'react';
 import AppLayout from '@/components/AppLayout';
-import UsageDashboard from './components/UsageDashboard';
+import TutorialsStudio from '@/components/studio/TutorialsStudio';
 
 export const dynamic = 'force-dynamic';
 
 export default function UsageDashboardPage() {
   return (
     <AppLayout>
-      <UsageDashboard />
+      <TutorialsStudio />
     </AppLayout>
   );
 }

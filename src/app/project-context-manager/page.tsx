@@ -1,13 +1,12 @@
-import React from 'react';
 import AppLayout from '@/components/AppLayout';
-import ProjectContextManager from './components/ProjectContextManager';
+import TemplatesStudio from '@/components/studio/TemplatesStudio';
 
 export const dynamic = 'force-dynamic';
 
 export default function ProjectContextManagerPage() {
   return (
     <AppLayout>
-      <ProjectContextManager />
+      <TemplatesStudio />
     </AppLayout>
   );
 }

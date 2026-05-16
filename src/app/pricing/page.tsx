@@ -1,12 +1,12 @@
 import AppLayout from '@/components/AppLayout';
-import ThemeDashboard from './components/ThemeDashboard';
+import PricingStudio from '@/components/studio/PricingStudio';
 
 export const dynamic = 'force-dynamic';
 
-export default function ThemeDashboardPage() {
+export default function PricingPage() {
   return (
     <AppLayout>
-      <ThemeDashboard />
+      <PricingStudio />
     </AppLayout>
   );
 }

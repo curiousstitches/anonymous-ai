@@ -1,12 +1,12 @@
 import AppLayout from '@/components/AppLayout';
-import ThemeDashboard from './components/ThemeDashboard';
+import ProvidersStudio from '@/components/studio/ProvidersStudio';
 
 export const dynamic = 'force-dynamic';
 
-export default function ThemeDashboardPage() {
+export default function ProvidersPage() {
   return (
     <AppLayout>
-      <ThemeDashboard />
+      <ProvidersStudio />
     </AppLayout>
   );
 }

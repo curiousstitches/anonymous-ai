@@ -1,12 +1,12 @@
 import AppLayout from '@/components/AppLayout';
-import ThemeDashboard from './components/ThemeDashboard';
+import TemplatesStudio from '@/components/studio/TemplatesStudio';
 
 export const dynamic = 'force-dynamic';
 
-export default function ThemeDashboardPage() {
+export default function TemplatesPage() {
   return (
     <AppLayout>
-      <ThemeDashboard />
+      <TemplatesStudio />
     </AppLayout>
   );
 }
