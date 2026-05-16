@@ -37,4 +37,3 @@ jest-test-results.json
 turbo/
 .vercel
 .env*.local
-.dyad/

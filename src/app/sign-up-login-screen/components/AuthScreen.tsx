@@ -111,8 +111,9 @@ export default function AuthScreen() {
     setAuthError('');
     try {
       await signIn(data.email, data.password);
+      // Small delay to ensure state is set before navigation
       await new Promise((resolve) => setTimeout(resolve, 100));
-      router.replace('/workspace');
+      router.replace('/');
       router.refresh();
     } catch (error: any) {
       setAuthError(error?.message || 'Invalid credentials. Please check your email and password.');
@@ -127,7 +128,7 @@ export default function AuthScreen() {
     setSuccessMessage('');
     try {
       await signUp(data.email, data.password, { fullName: data.name });
-      router.replace('/workspace');
+      router.replace('/');
       router.refresh();
     } catch (error: any) {
       setAuthError(error?.message || 'Failed to create account. Please try again.');

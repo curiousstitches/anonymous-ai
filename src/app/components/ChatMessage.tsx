@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   ThumbsUp,
   ThumbsDown,
@@ -17,9 +17,7 @@ import {
   Check,
   Paperclip,
   Image as ImageIcon,
-  Volume2,
 } from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext';
 import CodeBlock from './CodeBlock';
 
 interface AttachedFileInfo {
@@ -205,7 +203,6 @@ function formatFileSize(bytes?: number): string {
 export default function ChatMessage({ message }: ChatMessageProps) {
   const [liked, setLiked] = useState<'up' | 'down' | null>(null);
   const [copied, setCopied] = useState(false);
-  const { personalization } = useTheme();
 
   const isUser = message.role === 'user';
   const modelColor = message.model ? (modelColors[message.model] || '#94a3b8') : '#94a3b8';
@@ -215,25 +212,6 @@ export default function ChatMessage({ message }: ChatMessageProps) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [message.content]);
-
-  const speakMessage = useCallback(() => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    const spokenText = parseResponseSections(message.content)
-      .filter((section) => section.type !== 'code')
-      .map((section) => `${section.label}. ${section.content}`)
-      .join('\n\n') || message.content;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(spokenText);
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    window.speechSynthesis.speak(utterance);
-  }, [message.content]);
-
-  useEffect(() => {
-    if (!isUser && !message.streaming && personalization.narrationEnabled) {
-      speakMessage();
-    }
-  }, [isUser, message.streaming, personalization.narrationEnabled, speakMessage]);
 
   // Parse assistant response into sections
   const sections = !isUser && !message.streaming
@@ -378,21 +356,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
               {copied ? <Check size={13} /> : <Copy size={13} />}
             </button>
             <button
-              onClick={speakMessage}
-              className="p-1.5 rounded-md transition-all duration-150 active:scale-95"
-              style={{ color: personalization.narrationEnabled ? '#f59e0b' : 'var(--muted-foreground)' }}
-              title="Read response aloud"
-            >
-              <Volume2 size={13} />
-            </button>
-            <button
               className="p-1.5 rounded-md transition-all duration-150 active:scale-95"
               style={{ color: 'var(--muted-foreground)' }}
               title="Regenerate response"
             >
               <RotateCcw size={13} />
             </button>
-
           </div>
         )}
       </div>

@@ -1,12 +1,13 @@
+import React from 'react';
 import AppLayout from '@/components/AppLayout';
-import ProvidersStudio from '@/components/studio/ProvidersStudio';
+import SettingsScreen from './components/SettingsScreen';
 
 export const dynamic = 'force-dynamic';
 
 export default function SettingsPage() {
   return (
     <AppLayout>
-      <ProvidersStudio />
+      <SettingsScreen />
     </AppLayout>
   );
 }

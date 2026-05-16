@@ -1,192 +1,197 @@
 'use client';
 
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { logEvent } from '@/lib/eventLog';
 
-type AuthUser = {
-  id: string;
-  email?: string;
-  role?: string;
-  user_metadata?: {
-    full_name?: string;
-  };
+const AuthContext = createContext<any>({});
+
+// Admin credentials — local bypass (no Supabase account required)
+const ADMIN_EMAIL = 'happy-dadz@codepilot.dev';
+const ADMIN_PASSWORD = '1234Admin';
+
+// Synthetic admin user object (mirrors Supabase user shape)
+const ADMIN_USER = {
+  id: 'admin-local-001',
+  email: ADMIN_EMAIL,
+  email_confirmed_at: new Date().toISOString(),
+  role: 'admin',
+  app_metadata: {},
+  user_metadata: { full_name: 'Happy-Dadz' },
+  aud: 'authenticated',
+  created_at: new Date().toISOString(),
 };
 
-type AuthContextValue = {
-  user: AuthUser | null;
-  session: { user: AuthUser } | null;
-  loading: boolean;
-  signUp: (email: string, password: string, metadata?: { fullName?: string }) => Promise<unknown>;
-  signIn: (email: string, password: string) => Promise<unknown>;
-  signOut: () => Promise<void>;
-  getCurrentUser: () => Promise<AuthUser | null>;
-  isEmailVerified: () => boolean;
-  isAdmin: () => boolean;
-  getUserProfile: () => Promise<{ id: string; full_name: string; email?: string } | null>;
-};
-
-const DEFAULT_ADMIN_EMAIL = 'happy-dadz@codepilot.dev';
-const AuthContext = createContext<AuthContextValue | null>(null);
+const ADMIN_SESSION_KEY = 'codepilot_admin_session';
+const ADMIN_COOKIE_NAME = 'codepilot_admin_auth';
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
   return context;
 };
 
-async function fetchAdminSession() {
-  const response = await fetch('/api/admin-session', { cache: 'no-store' });
-  if (!response.ok) return null;
-  const data = await response.json();
-  return data.user as AuthUser;
-}
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const supabase = useMemo(() => createClient(), []);
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [session, setSession] = useState<{ user: AuthUser } | null>(null);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
   useEffect(() => {
-    let active = true;
-
-    const initialize = async () => {
-      const adminUser = await fetchAdminSession();
-      if (!active) return;
-      if (adminUser) {
-        setUser(adminUser);
-        setSession({ user: adminUser });
+    // Check for persisted admin session first
+    try {
+      const stored = sessionStorage.getItem(ADMIN_SESSION_KEY);
+      if (stored === 'true') {
+        setUser(ADMIN_USER);
+        setSession({ user: ADMIN_USER });
         setLoading(false);
         return;
       }
+    } catch (_) {}
 
-      const { data } = await supabase.auth.getSession();
-      if (!active) return;
-      setSession((data.session?.user ? { user: data.session.user as AuthUser } : null));
-      setUser((data.session?.user as AuthUser) ?? null);
-      setLoading(false);
-    };
-
-    initialize();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
-      const adminUser = await fetchAdminSession();
-      if (!active) return;
-      if (adminUser) {
-        setUser(adminUser);
-        setSession({ user: adminUser });
-        setLoading(false);
-        return;
-      }
-      setSession(nextSession?.user ? { user: nextSession.user as AuthUser } : null);
-      setUser((nextSession?.user as AuthUser) ?? null);
+    // Get initial Supabase session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => {
-      active = false;
-      subscription.unsubscribe();
-    };
-  }, [supabase]);
+    // Listen for auth changes
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Don't override admin session
+      try {
+        if (sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true') return;
+      } catch (_) {}
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-  const signUp = async (email: string, password: string, metadata: { fullName?: string } = {}) => {
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Email/Password Sign Up
+  const signUp = async (email: string, password: string, metadata = {}) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: metadata.fullName || '' },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+        data: {
+          full_name: (metadata as any)?.fullName || '',
+          avatar_url: (metadata as any)?.avatarUrl || ''
+        },
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
     });
-
-    if (error) throw error;
+    if (error) {
+      logEvent('auth', 'error', 'Sign-up failed', { user: email, detail: error.message });
+      throw error;
+    }
+    logEvent('auth', 'success', 'New user registered', { user: email });
     return data;
   };
 
+  // Email/Password Sign In — with local admin bypass
   const signIn = async (email: string, password: string) => {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (normalizedEmail === DEFAULT_ADMIN_EMAIL) {
-      const adminResponse = await fetch('/api/admin-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: normalizedEmail, password }),
-      });
-
-      if (adminResponse.ok) {
-        const data = await adminResponse.json();
-        setUser(data.user);
-        setSession({ user: data.user });
-        return data;
-      }
+    // Admin local bypass — no Supabase call needed
+    if (
+      email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
+      password === ADMIN_PASSWORD
+    ) {
+      try { sessionStorage.setItem(ADMIN_SESSION_KEY, 'true'); } catch (_) {}
+      // Set a cookie so the middleware can detect the admin session
+      try {
+        document.cookie = `${ADMIN_COOKIE_NAME}=true; path=/; SameSite=Lax`;
+      } catch (_) {}
+      setUser(ADMIN_USER);
+      setSession({ user: ADMIN_USER });
+      logEvent('auth', 'info', 'Admin signed in', { user: email });
+      return { user: ADMIN_USER, session: { user: ADMIN_USER } };
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password,
+      password
     });
-
-    if (error) throw error;
+    if (error) {
+      logEvent('auth', 'warning', 'Sign-in failed', { user: email, detail: error.message });
+      throw error;
+    }
+    logEvent('auth', 'success', 'User signed in', { user: email });
     return data;
   };
 
+  // Sign Out
   const signOut = async () => {
-    if (user?.role === 'admin') {
-      await fetch('/api/admin-logout', { method: 'POST' });
-      setUser(null);
-      setSession(null);
-      return;
-    }
+    // Clear admin session if active
+    try {
+      if (sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true') {
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        // Clear admin cookie
+        document.cookie = `${ADMIN_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        logEvent('auth', 'info', 'Admin signed out', { user: ADMIN_EMAIL });
+        setUser(null);
+        setSession(null);
+        return;
+      }
+    } catch (_) {}
 
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    setUser(null);
-    setSession(null);
+    logEvent('auth', 'info', 'User signed out');
   };
 
+  // Get Current User
   const getCurrentUser = async () => {
-    const adminUser = await fetchAdminSession();
-    if (adminUser) return adminUser;
-    const { data, error } = await supabase.auth.getUser();
+    // Return admin user directly if admin session is active
+    try {
+      if (sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true') return ADMIN_USER;
+    } catch (_) {}
+    const { data: { user }, error } = await supabase.auth.getUser();
     if (error) throw error;
-    return (data.user as AuthUser) ?? null;
+    return user;
   };
 
-  const isEmailVerified = () => Boolean(user?.email);
-  const isAdmin = () => user?.role === 'admin' || user?.email?.toLowerCase() === DEFAULT_ADMIN_EMAIL;
+  // Check if Email is Verified
+  const isEmailVerified = () => {
+    return user?.email_confirmed_at !== null;
+  };
 
+  // Check if current user is admin
+  const isAdmin = () => {
+    return user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  };
+
+  // Get User Profile from Database
   const getUserProfile = async () => {
     if (!user) return null;
-    if (isAdmin()) {
-      return {
-        id: user.id,
-        full_name: user.user_metadata?.full_name || 'Owner Admin',
-        email: user.email,
-      };
-    }
-
-    const { data, error } = await supabase.from('user_profiles').select('*').eq('id', user.id).single();
+    // Admin has no DB profile
+    if (user.id === ADMIN_USER.id) return { id: ADMIN_USER.id, full_name: 'Happy-Dadz', email: ADMIN_EMAIL };
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
     if (error) throw error;
     return data;
   };
 
-  const value = useMemo<AuthContextValue>(
-    () => ({
-      user,
-      session,
-      loading,
-      signUp,
-      signIn,
-      signOut,
-      getCurrentUser,
-      isEmailVerified,
-      isAdmin,
-      getUserProfile,
-    }),
-    [user, session, loading],
-  );
+  const value = {
+    user,
+    session,
+    loading,
+    signUp,
+    signIn,
+    signOut,
+    getCurrentUser,
+    isEmailVerified,
+    isAdmin,
+    getUserProfile
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};
