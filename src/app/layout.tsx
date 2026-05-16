@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import AppProviders from '@/components/AppProviders';
 import '../styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CodePilot - AI Code Builder powered by Puter',
+  title: 'CodePilot - AI Build Studio',
   description:
-    'CodePilot builds complete, runnable code for you. Describe your app and get every file generated instantly, powered by Puter AI — free, no API key required.',
-  keywords: ['AI', 'code builder', 'code generator', 'Puter AI', 'development', 'scaffold'],
+    'Build complete, runnable code instantly. Describe your app, upload an image, or sync a repo. Powered by the best free and premium AI engines.',
+  keywords: ['AI', 'code builder', 'code generator', 'Puter AI', 'GitHub', 'development', 'scaffold'],
   authors: [{ name: 'CodePilot Team' }],
   openGraph: {
     type: 'website',
@@ -30,8 +31,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors`}>
-        {children}
+      <body className={`${inter.className} bg-[var(--background)] text-[var(--foreground)] transition-colors`}>
+        <AppProviders>
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

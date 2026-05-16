@@ -11,33 +11,43 @@ function getProjectRef(): string {
 function injectTokenFromHeader(request: NextRequest): void {
   const token = request.headers.get('x-sb-token');
   if (!token) return;
-  const hasCookie = request.cookies.getAll().some((c) => c.name.includes('auth-token'));
+  const hasCookie = request.cookies.getAll().some((cookie) => cookie.name.includes('auth-token'));
   if (hasCookie) return;
   request.cookies.set(`sb-${getProjectRef()}-auth-token`, token);
 }
 
-// Routes that require authentication
-const PROTECTED_ROUTES = ['/', '/usage-dashboard', '/project-context-manager', '/settings-api-configuration', '/profile-account', '/admin', '/theme-dashboard'];
-// Routes that are public (no auth needed)
-const PUBLIC_ROUTES = ['/sign-up-login-screen', '/auth/callback'];
+const PROTECTED_ROUTES = [
+  '/workspace',
+  '/usage-dashboard',
+  '/project-context-manager',
+  '/settings-api-configuration',
+  '/profile-account',
+  '/admin',
+  '/theme-dashboard',
+];
+
+const PUBLIC_ROUTES = ['/', '/templates', '/tutorial', '/pricing', '/sign-up-login-screen', '/auth/callback'];
 
 export async function middleware(request: NextRequest) {
   injectTokenFromHeader(request);
   let supabaseResponse = NextResponse.next({ request });
-
   const pathname = request.nextUrl.pathname;
+  const isAdminSession = request.cookies.get(ADMIN_COOKIE_NAME)?.value === 'owner';
 
-  // Check for admin cookie — local admin bypass
-  const adminCookie = request.cookies.get(ADMIN_COOKIE_NAME);
-  const isAdminSession = adminCookie?.value === 'true';
-
-  // If admin session is active, allow all protected routes and redirect away from login
   if (isAdminSession) {
     if (pathname === '/sign-up-login-screen') {
       const url = request.nextUrl.clone();
-      url.pathname = '/';
+      url.pathname = '/workspace';
       return NextResponse.redirect(url);
     }
+    return supabaseResponse;
+  }
+
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    route === '/' ? pathname === '/' : pathname === route || pathname.startsWith(`${route}/`),
+  );
+
+  if (isPublicRoute) {
     return supabaseResponse;
   }
 
@@ -56,17 +66,14 @@ export async function middleware(request: NextRequest) {
           });
         },
       },
-    }
+    },
   );
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users away from protected routes
-  const isProtected = PROTECTED_ROUTES.some((route) =>
-    route === '/' ? pathname === '/' : pathname.startsWith(route)
-  );
+  const isProtected = PROTECTED_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
@@ -74,10 +81,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from login page
   if (user && pathname === '/sign-up-login-screen') {
     const url = request.nextUrl.clone();
-    url.pathname = '/';
+    url.pathname = '/workspace';
     return NextResponse.redirect(url);
   }
 
