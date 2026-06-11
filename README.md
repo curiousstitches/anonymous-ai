@@ -2,75 +2,66 @@
 
 # 🕶️ Anonymous AI
 
-### *Your no-leash AI coding partner — build whole apps from your phone, free.*
+### *Tell it what to build. Get the whole thing. From your phone. Free.*
 
-![Status](https://img.shields.io/badge/status-live-2bff88?style=for-the-badge)
-![Cost](https://img.shields.io/badge/cost-%240%20forever-2bff88?style=for-the-badge)
-![Built for](https://img.shields.io/badge/built%20for-mobile%20first-7c6fff?style=for-the-badge)
-![Code](https://img.shields.io/badge/code%20needed-none-ffb454?style=for-the-badge)
+![Live](https://img.shields.io/badge/●_live-2bff88?style=for-the-badge&labelColor=07080a)
+![Cost](https://img.shields.io/badge/cost-%240_forever-2bff88?style=for-the-badge&labelColor=07080a)
+![No code](https://img.shields.io/badge/code_needed-none-ffb454?style=for-the-badge&labelColor=07080a)
+![Mobile](https://img.shields.io/badge/built_for-your_phone-7c6fff?style=for-the-badge&labelColor=07080a)
 
-`// PRIVATE · UNRESTRICTED · YOURS`
+```
+// PRIVATE · UNRESTRICTED · YOURS
+```
+
+**[🚀 Open the app →](https://curiousstitches.github.io/anonymous-ai/)**
 
 </div>
 
 ---
 
-## 🤔 What is this? (in plain English)
+## 🤔 What is it? (no jargon)
 
-Anonymous AI is a **chat app you install on your phone** that lets you talk to powerful AI models — and have them **build entire apps for you**.
+A chat app you keep on your phone that talks to powerful AIs — and **builds entire apps for you**.
 
-You don't write code. You just say *"build me a ___"* and it writes every file, complete and ready to use.
+You don't write code. You say *"build me a ___"* and it writes every file, ready to use. Like texting a genius programmer who never sleeps, never charges you, and doesn't refuse to help.
 
-Think of it like texting a genius programmer who never sleeps, never charges you, and never says *"I can't help with that."*
-
-> 💡 **The whole thing is one file.** No installing, no accounts, no monthly fees. Open it, paste a free key, start building.
+> 💡 **One file. No accounts. No fees.** Open it, paste a free key, start building.
 
 ---
 
-## ✨ What can it do?
+## ✨ Everything it does
 
-| 🎯 Feature | 💬 What it means for you |
-|---|---|
-| 🔨 **Builder Mode** | Tap a template (or describe anything) and it generates a **whole project** — every file, ready to run |
-| 🤖 **Many free AIs** | Switch between coding brains, chat brains, and **uncensored** models — all free |
-| ⚡ **Smart Auto** | Don't know which AI to pick? Auto picks the best one **and switches if one breaks** |
-| 🔓 **Unrestricted** | Uncensored models for when normal AIs refuse to help |
-| 📦 **One-tap downloads** | Save any file, or grab a **whole project as a .zip** |
-| 📎 **Send it files** | Upload your code or screenshots and the AI reads them |
-| 🎤 **Talk to it** | Voice input — speak instead of typing |
-| 🎨 **Make it yours** | Themes, fonts, colors, animated backgrounds, 3D effects |
-| 💾 **Never lose work** | Every chat saves automatically, searchable, exportable |
-| 🚀 **One-tap GitHub push** | Save any build straight to GitHub — **no terminal, no git** |
-| ▶️ **Live Preview** | Built an HTML app? See it **run right on your phone** instantly |
-| 🔊 **Read aloud** | The AI reads its answers out loud |
-| ➡️ **Keep going** | One tap continues a cut-off answer |
-| ⚡ **Slash commands** | Type `/build`, `/fix`, `/explain` for instant actions |
-| 📱 **Feels like a real app** | Add to home screen → fullscreen, no browser bars |
+| | Feature | In plain English |
+|:--:|---|---|
+| 🔨 | **Builder Mode** | Pick a template or describe anything → get a **complete project**, every file |
+| ⚡ | **Smart Auto** | Don't know which AI? It picks the best one **and switches if one breaks** |
+| 🔓 | **Uncensored** | Models that answer directly when normal AIs refuse |
+| 🖥️ | **Use your own AI** | Point it at your PC or a free GPU for **unlimited** free AI |
+| 🚀 | **GitHub push** | Save any build to GitHub in one tap — **no terminal** |
+| ▶️ | **Live Preview** | Built an HTML app? **Watch it run** on your phone instantly |
+| 📦 | **Downloads** | Save one file, or a **whole project as a .zip** |
+| 📎 | **Send files** | Upload code or screenshots for the AI to read |
+| 🎤 | **Voice** | Talk to type · 🔊 it can read answers aloud |
+| ⛔ | **Stop button** | Cut off a long answer anytime |
+| 🎨 | **Make it yours** | Themes, fonts, colors, animated backgrounds, 3D effects |
+| 💾 | **Never lose work** | Chats auto-save, searchable, with a typed-draft backup |
 
 ---
 
-## 🚀 Get started in 3 taps
+## 🚀 Start in 3 taps
 
 ```
-  1️⃣  Open the app  →  2️⃣  Paste your free key  →  3️⃣  Start building
+  1️⃣  Open the app  →  2️⃣  Paste a free key  →  3️⃣  Build
 ```
 
-### Step 1 — Get a free key 🔑
-- Go to **[openrouter.ai](https://openrouter.ai)** → **Sign Up** (free, no card)
-- Open **Keys** → **Create Key** → copy it
-- ⚙️ Important: in **Settings → Privacy**, turn ON *"Free endpoints that may train on request data"* so the free models work
+**Get a free key** 🔑 — [openrouter.ai](https://openrouter.ai) → Sign Up → Keys → Create Key.
+Then in **Settings → Privacy**, turn ON *"Free endpoints that may train on request data"* (this unlocks the free models).
 
-### Step 2 — Open the app 📲
-- Open `index.html` in **Chrome**
-- Paste your key when it asks
-
-### Step 3 — Make it an app 🏠
-- Chrome menu (⋮) → **Add to Home Screen**
-- Now it opens fullscreen, just like any app
+**Install it** 📲 — open the app in Chrome → menu (⋮) → **Add to Home Screen**. Now it's fullscreen, like any app.
 
 ---
 
-## 🧠 How it works (the simple version)
+## 🧠 How it works
 
 ```mermaid
 flowchart LR
@@ -78,35 +69,36 @@ flowchart LR
     B --> C{⚡ Smart Auto}
     C -->|coding| D[🧑‍💻 Coding AI]
     C -->|uncensored| E[🔓 Uncensored AI]
-    C -->|chatting| F[💬 Chat AI]
+    C -->|your own| F[🖥️ Your PC / GPU]
     D --> G[📦 Complete project]
     E --> G
     F --> G
-    G -->|"one tap"| H([💾 Download .zip])
+    G -->|one tap| H([🚀 Push to GitHub])
+    G -->|one tap| I([▶️ Preview / 💾 Download])
     style B fill:#2bff88,color:#04140a
     style G fill:#7c6fff,color:#fff
     style H fill:#ffb454,color:#180f00
+    style I fill:#ffb454,color:#180f00
 ```
 
-**In words:** You ask → Auto picks the best free AI → if that one's busy it tries another → you get a complete app → download it. No dead ends, no terminal, no payments.
+You ask → it picks the best free AI → if that one's down it tries another → you get a complete app → preview it, download it, or push it to GitHub. **No dead ends. No terminal. No payments.**
 
 ---
 
-## 🤖 The AI models
+## 🤖 The AIs you can use
 
 | Brain | Best for | Free? |
-|---|---|---|
+|---|---|:--:|
 | ⚡ **Auto — Coding** | Building apps & scripts | ✅ |
 | 🔓 **Auto — Uncensored** | When other AIs refuse | ✅ |
 | 💬 **Auto — Chatting** | Questions & ideas | ✅ |
-| 🧑‍💻 Nemotron, Kimi, Laguna, GPT-OSS | Heavy coding | ✅ |
-| 🔓 Venice (Dolphin), DeepSeek R1 | Unfiltered answers | ✅ |
+| 🖥️ **Your Custom / Local** | Unlimited via your PC or a free GPU | ✅ |
 
-> 🛡️ **Powered by two free sources** — OpenRouter (main) and Chutes (backup). If one model goes down, Auto quietly switches to a working one so you're never stuck.
+> 🛡️ Backed by **multiple free sources** (OpenRouter, Chutes, Venice). If one's down, Auto switches so you're never stuck.
 
 ---
 
-## 🛠️ Builder Mode templates
+## 🛠️ Builder templates
 
 <div align="center">
 
@@ -119,43 +111,24 @@ flowchart LR
 
 </div>
 
-*...or just describe your own and pick the language. It builds the whole thing.*
+*…or describe your own and pick the language.*
 
 ---
 
-## 🔒 Is my stuff private?
+## 🆓 Want unlimited uncensored AI?
 
-- 🔑 Your API key is stored **only on your phone** — it never goes anywhere except to the AI
-- 💬 Your chats are saved **on your device**, not on any server
-- ⚠️ Heads up: free models *can* use what you type to improve themselves, so don't paste passwords or private personal info into them. Fine for coding and everyday stuff.
+Run the model yourself — free, private, no limits. See **HOSTING.md**:
+- 🥇 **Your PC + Ollama** — unlimited, $0 forever
+- 🥈 **Kaggle free GPU** — bigger models, works anywhere
+- 🥉 **Venice free tier** — zero setup, just a key
 
 ---
 
-## ❓ Quick FAQ
+## 🔒 Your privacy
 
-<details>
-<summary><b>💸 Is it really free?</b></summary>
-<br>
-Yes. The AI models are free-tier (no credit card). You may hit a daily limit on heavy use, but Auto-switching helps stretch it.
-</details>
-
-<details>
-<summary><b>📵 Does it work offline?</b></summary>
-<br>
-The app opens, but the AI needs internet to think. (Offline shell caching is on the roadmap.)
-</details>
-
-<details>
-<summary><b>🏃 Can it RUN the apps it builds?</b></summary>
-<br>
-It writes them complete and ready. Simple HTML apps can preview right in the app (roadmap). Bigger projects you run on a computer or free host.
-</details>
-
-<details>
-<summary><b>🤖 Why "uncensored"?</b></summary>
-<br>
-Normal AIs sometimes refuse legitimate coding or research help. Uncensored models answer directly. Use them responsibly.
-</details>
+- 🔑 Keys stay **on your phone only**
+- 💬 Chats save **on your device**, not a server
+- ⚠️ Free models *can* learn from what you type — don't paste passwords or private info into them
 
 ---
 
@@ -163,6 +136,8 @@ Normal AIs sometimes refuse legitimate coding or research help. Uncensored model
 
 ### Made for builders who don't write code. 🕶️
 
-`anon█ai`
+```
+anon█ai
+```
 
 </div>
