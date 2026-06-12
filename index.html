@@ -21,17 +21,18 @@
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 :root {
-  --bg:#07080a; --surface:#0e1014; --surface2:#15181e; --border:#23272f;
-  --text:#eef1f5; --muted:#566; --muted2:#8a93a0;
-  --accent:#2bff88; --accent-dim:#1d9e57; --accent-text:#04140a;
+  --bg:#0a0d12; --surface:#121722; --surface2:#1b2330; --border:#2c3848;
+  --text:#f2f6fb; --muted:#5a6b80; --muted2:#9fb0c4;
+  --accent:#2dff9a; --accent-dim:#3affb0; --accent-text:#042316;
   --redact:#000; --warn:#ffb454;
   --user-bg:#10211a; --user-border:rgba(43,255,136,0.28); --ai-bg:#0e1014;
   --font-scale:1; --mono:'Share Tech Mono',monospace; --sans:'Inter',-apple-system,sans-serif;
 }
 [data-theme="black"]{--bg:#000;--surface:#0b0b0b;--surface2:#141414;--border:#262626;--accent:#ffffff;--accent-text:#000;--user-bg:#181818;--user-border:#333;--ai-bg:#0b0b0b;}
-[data-theme="midnight"]{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2236;--border:#2a3550;--accent:#5b8def;--accent-text:#fff;--user-bg:#1a2845;--user-border:rgba(91,141,239,0.3);--ai-bg:#111827;}
-[data-theme="crimson"]{--bg:#120808;--surface:#1a0d0d;--surface2:#251414;--border:#3d2020;--accent:#f87171;--accent-text:#1a0000;--user-bg:#2a1212;--user-border:rgba(248,113,113,0.3);--ai-bg:#1a0d0d;}
-[data-theme="amber"]{--bg:#100b03;--surface:#1a1206;--surface2:#251a08;--border:#3d2c0f;--accent:#ffb454;--accent-text:#180f00;--user-bg:#2a1d08;--user-border:rgba(255,180,84,0.3);--ai-bg:#1a1206;}
+[data-theme="midnight"]{--bg:#0b1226;--surface:#13203f;--surface2:#1c2c52;--border:#2f487a;--accent:#4da3ff;--accent-dim:#6db8ff;--accent-text:#021022;--user-bg:#1b3160;--user-border:rgba(77,163,255,0.45);--ai-bg:#13203f;}
+[data-theme="crimson"]{--bg:#1a0a0a;--surface:#251010;--surface2:#341818;--border:#52282a;--accent:#ff6b6b;--accent-dim:#ff8a8a;--accent-text:#1a0000;--user-bg:#3a1818;--user-border:rgba(255,107,107,0.45);--ai-bg:#251010;}
+[data-theme="amber"]{--bg:#16100a;--surface:#221810;--surface2:#322414;--border:#4d3a1c;--accent:#ffc045;--accent-dim:#ffd47a;--accent-text:#180f00;--user-bg:#3a2810;--user-border:rgba(255,192,69,0.45);--ai-bg:#221810;}
+[data-theme="violet"]{--bg:#140a26;--surface:#1f1138;--surface2:#2b1a4d;--border:#432a73;--accent:#b388ff;--accent-dim:#c9a8ff;--accent-text:#100620;--user-bg:#2e1a55;--user-border:rgba(179,136,255,0.5);--ai-bg:#1f1138;}
 [data-theme="ghost"]{--bg:#f6f7f9;--surface:#fff;--surface2:#eef0f3;--border:#d8dce2;--text:#11141a;--muted:#aab;--muted2:#667;--accent:#0b8a4a;--accent-text:#fff;--user-bg:#e2f5ec;--user-border:rgba(11,138,74,0.3);--ai-bg:#fff;}
 
 html, body { height:100%; background:var(--bg); color:var(--text); font-family:var(--sans); overflow:hidden; position:fixed; inset:0; width:100%; }
@@ -271,6 +272,14 @@ textarea.ta:focus { border-color:var(--accent); }
 .pv-frame { flex:1; border:none; background:#fff; width:100%; }
 .pv-btn { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:var(--text); font-size:13px; cursor:pointer; }
 .pv-btn.accent { background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+/* universal button press + glow on every tappable thing */
+button, .pill, .quick, .swatch, .fx-opt, .chip, .stack-chip, .tpl, .pick-card, .model-setup-item, .hist, .drop-item, .info-i, .mini-btn, .big-btn, .step-btn, .send-btn, .send-btn, .theme-swatch { transition: transform 0.09s ease, box-shadow 0.18s ease, filter 0.12s ease; }
+button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chip:active, .stack-chip:active, .tpl:active, .pick-card:active, .model-setup-item:active, .hist:active, .drop-item:active, .info-i:active, .mini-btn:active, .big-btn:active, .step-btn:active, .send-btn:active { transform: scale(0.93); filter: brightness(1.15); }
+@keyframes pressBurst { 0%{box-shadow:0 0 0 0 var(--accent), 0 0 0 0 var(--accent);} 60%{box-shadow:0 0 14px 2px var(--accent), 0 0 0 6px transparent;} 100%{box-shadow:0 0 0 0 transparent, 0 0 0 12px transparent;} }
+.press-burst { animation: pressBurst 0.45s ease-out; }
+/* spark particles on press */
+.spark { position:fixed; width:5px; height:5px; border-radius:50%; background:var(--accent); pointer-events:none; z-index:9999; opacity:1; }
+@keyframes sparkFly { to { transform: translate(var(--sx), var(--sy)) scale(0.2); opacity:0; } }
 /* update banner */
 #ubanner { position:fixed; top:0; left:0; right:0; z-index:500; background:var(--accent); color:var(--accent-text); padding:12px 14px; padding-top:max(12px,env(safe-area-inset-top)); display:flex; align-items:center; gap:10px; transform:translateY(-100%); transition:transform .35s cubic-bezier(.34,1.4,.64,1); box-shadow:0 4px 16px rgba(0,0,0,.4); }
 #ubanner.show { transform:translateY(0); }
@@ -607,7 +616,7 @@ textarea.ta:focus { border-color:var(--accent); }
 <div id="toast"></div>
 
 <script>
-const APP_VERSION='5.1';
+const APP_VERSION='5.2';
 
 // ── PROVIDERS ──
 const PROVIDERS = {
@@ -625,7 +634,7 @@ const MODELS = [
   { p:'openrouter', id:'poolside/laguna-m.1:free',              name:'Laguna M.1',       desc:'Built for coding agents', cat:'Coding', tags:[] },
   { p:'openrouter', id:'openai/gpt-oss-120b:free',              name:'GPT-OSS 120B',     desc:'OpenAI open · code + chat', cat:'Coding', tags:[] },
   // ===== UNRESTRICTED CODING (uncensored, still strong at code) =====
-  { p:'chutes',     id:'deepseek-ai/DeepSeek-R1',               name:'DeepSeek R1',      desc:'Deep reasoning + code · few refusals', cat:'UnCoding', tags:['unc'] },
+  { p:'chutes',     id:'deepseek-ai/DeepSeek-V3',               name:'DeepSeek R1',      desc:'Deep reasoning + code · few refusals', cat:'UnCoding', tags:['unc'] },
   { p:'custom',     id:'__custom_code__',                       name:'My Local Coder',   desc:'Your Ollama dolphin-coder (best, unlimited)', cat:'UnCoding', tags:['unc'] },
   // ===== UNCENSORED CHAT (human, expressive, flirty) =====
   { p:'openrouter', id:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', name:'Dolphin (Venice)', desc:'Warm, human, flirty · free', cat:'UnChat', tags:['unc'] },
@@ -646,8 +655,8 @@ MODELS.concat(META).forEach(function(m){ if(!MODEL_INDEX[m.id]) MODEL_INDEX[m.id
 
 // Only the TOP picks per mode go into Auto. Auto skips any whose key you have not set.
 const AUTO_CHAINS = {
-  'auto-code'  :['nvidia/nemotron-3-super-120b-a12b:free','moonshotai/kimi-k2.6:free','poolside/laguna-m.1:free','openai/gpt-oss-120b:free','deepseek-ai/DeepSeek-R1','openrouter/free'],
-  'auto-uncode':['deepseek-ai/DeepSeek-R1','cognitivecomputations/dolphin-mistral-24b-venice-edition:free'],
+  'auto-code'  :['nvidia/nemotron-3-super-120b-a12b:free','moonshotai/kimi-k2.6:free','poolside/laguna-m.1:free','openai/gpt-oss-120b:free','deepseek-ai/DeepSeek-V3','openrouter/free'],
+  'auto-uncode':['deepseek-ai/DeepSeek-V3','cognitivecomputations/dolphin-mistral-24b-venice-edition:free'],
   'auto-unchat':['cognitivecomputations/dolphin-mistral-24b-venice-edition:free','venice/uncensored:free','venice-uncensored']
 };
 const AUTO_LABEL = { 'auto-code':'⚡ Auto — Coding', 'auto-uncode':'🔓 Auto — Unrestricted Coding', 'auto-unchat':'💬 Auto — Uncensored Chat' };
@@ -659,7 +668,7 @@ const SECTION_INFO = {
   'Custom':'Your own AI server (PC Ollama, Kaggle GPU). Unlimited and private.'
 };
 const THEMES = [
-  {id:'anon',name:'Anon',color:'#07080a'},{id:'black',name:'Black',color:'#000'},
+  {id:'anon',name:'Anon',color:'#0a0d12'},{id:'violet',name:'Violet',color:'#140a26'},{id:'black',name:'Black',color:'#000'},
   {id:'midnight',name:'Midnight',color:'#0a0e1a'},{id:'crimson',name:'Crimson',color:'#120808'},
   {id:'amber',name:'Amber',color:'#100b03'},{id:'ghost',name:'Light',color:'#f6f7f9'}
 ];
@@ -773,7 +782,7 @@ window.onload=function(){
   applyAllFx();
   var cb=localStorage.getItem('anonCustomBg');
   if(cb){ var el=document.getElementById('custom-bg'); el.style.backgroundImage='url('+cb+')'; el.style.display='block'; }
-  refreshKeyStatus(); refreshGh(); refreshEnabledUI();
+  refreshKeyStatus(); refreshGh(); refreshEnabledUI(); buildModelDrop();  // rebuild now that keys are loaded
 
   if(keys.or || keys.chutes){
     document.getElementById('setup').style.display='none';
@@ -827,13 +836,15 @@ function refreshKeyStatus(){
 async function testProvider(prov){
   var key = prov==='custom'?keys.custom:keys[prov];
   var url = prov==='custom'?customUrl:PROVIDERS[prov].url;
-  var testModel = {openrouter:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', chutes:'deepseek-ai/DeepSeek-R1', venice:'venice-uncensored', custom:customModel}[prov];
+  var testModel = {openrouter:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', chutes:'deepseek-ai/DeepSeek-V3', venice:'venice-uncensored', custom:customModel}[prov];
   if(prov!=='custom' && !key){ showInfo('No key yet','Add a '+PROVIDERS[prov].name+' key first, then test.'); return; }
   if(prov==='custom' && (!customUrl||!customModel)){ showInfo('Set up endpoint','Set your Custom URL and model name first.'); return; }
-  showToast('Testing '+PROVIDERS[prov].name+'...');
+  showInfo('Testing '+PROVIDERS[prov].name+'...','Sending a quick test to the server. This can take up to 30 seconds on free models — hang tight. The result will pop up automatically.');
   try{
     var hdrs={'Content-Type':'application/json'}; if(key) hdrs['Authorization']='Bearer '+key;
-    var res=await fetch(url,{method:'POST',headers:hdrs,body:JSON.stringify({model:testModel,messages:[{role:'user',content:'hi'}],max_tokens:10})});
+    var ctl=new AbortController(); var to=setTimeout(function(){ctl.abort();},30000);
+    var res=await fetch(url,{method:'POST',headers:hdrs,signal:ctl.signal,body:JSON.stringify({model:testModel,messages:[{role:'user',content:'hi'}],max_tokens:10})});
+    clearTimeout(to);
     var txt=await res.text(); var msg;
     try{ var j=JSON.parse(txt); msg=(j.error&&j.error.message)||(j.choices?'(model replied)':txt); }catch(e){ msg=txt; }
     if(res.ok){ showInfo('\u2705 '+PROVIDERS[prov].name+' WORKS','Status '+res.status+' — your key and a test model both work. If the app still fails on a specific model, that model name may be stale; tell Claude which one.'); return; }
@@ -844,10 +855,10 @@ async function testProvider(prov){
     else if(res.status===402){ hint='<br><br>Needs credits. Add a little balance, or use only :free models.'; }
     else if(res.status===429){ hint='<br><br>Rate-limited or daily free cap hit. Wait a bit, or add a second provider (Chutes).'; }
     showInfo('\u26a0\ufe0f '+PROVIDERS[prov].name+' error '+res.status,'Exact message from the server:<br><br><b>'+esc(String(msg)).slice(0,320)+'</b>'+hint);
-  }catch(e){ showInfo('Connection failed', e.message==='Failed to fetch'?'No internet, or this device cannot reach that endpoint (common with a Custom/Local URL on a different network).':esc(e.message)); }
+  }catch(e){ if(e.name==='AbortError'){ showInfo('\u23f1\ufe0f Test timed out','The server did not answer within 30 seconds. That free model may be overloaded or down right now. Try again in a moment, or pick a different model.'); } else { showInfo('Connection failed', e.message==='Failed to fetch'?'No internet, or this device cannot reach that endpoint (common with a Custom/Local URL on a different network).':esc(e.message)); } }
 }
 function setEnabled(which,on){
-  enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus();
+  enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus(); buildModelDrop();
   var name=(PROVIDERS[which==='or'?'openrouter':which]||{name:which}).name;
   var hasKey = which==='custom'?!!customUrl:!!keys[which];
   if(on){
@@ -861,10 +872,10 @@ function refreshEnabledUI(){ ['or','chutes','venice','custom'].forEach(function(
 function setKey(which){
   var map={or:{l:'OpenRouter (sk-or-...)',s:PROVIDERS.openrouter.store},chutes:{l:'Chutes (cpk_...)',s:PROVIDERS.chutes.store},venice:{l:'Venice.ai',s:PROVIDERS.venice.store}};
   var m=map[which]; var v=prompt('Paste your '+m.l+' key:');
-  if(v && v.trim()){ keys[which]=v.trim(); localStorage.setItem(m.s, v.trim()); enabled[which]=true; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshEnabledUI(); refreshKeyStatus(); showInfo('\u2705 '+m.l.split(' (')[0]+' key saved','Saved as <b>'+maskKey(v.trim())+'</b> and switched ON.<br><br>Now tap <b>🔍 Test Connection</b> to make sure it actually works before you rely on it.'); }
+  if(v && v.trim()){ keys[which]=v.trim(); localStorage.setItem(m.s, v.trim()); enabled[which]=true; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshEnabledUI(); refreshKeyStatus(); buildModelDrop(); showInfo('\u2705 '+m.l.split(' (')[0]+' key saved','Saved as <b>'+maskKey(v.trim())+'</b> and switched ON.<br><br>Now tap <b>🔍 Test Connection</b> to make sure it actually works before you rely on it.'); }
 }
 function setCustom(part){
-  if(part==='url'){ var u=prompt('Paste your endpoint Base URL.\n\nExamples:\n• Local PC Ollama: http://192.168.1.x:11434/v1/chat/completions\n• Kaggle/ngrok: https://xxxx.ngrok.io/v1/chat/completions\n• Featherless: https://api.featherless.ai/v1/chat/completions', customUrl||''); if(u!==null){ customUrl=u.trim(); localStorage.setItem('anonCustomUrl',customUrl); refreshKeyStatus(); showToast('Endpoint saved',true); } }
+  if(part==='url'){ var u=prompt('Paste your endpoint Base URL.\n\nExamples:\n• Local PC Ollama: http://192.168.1.x:11434/v1/chat/completions\n• Kaggle/ngrok: https://xxxx.ngrok.io/v1/chat/completions\n• Featherless: https://api.featherless.ai/v1/chat/completions', customUrl||''); if(u!==null){ customUrl=u.trim(); localStorage.setItem('anonCustomUrl',customUrl); refreshKeyStatus(); buildModelDrop(); showToast('Endpoint saved',true); } }
   else if(part==='model'){ var md=prompt('Model name to send (exactly as the endpoint expects).\n\nExamples:\n• Ollama: dolphin-mistral or dolphin-llama3\n• Venice: venice-uncensored\n• Featherless: a model slug from their list', customModel||''); if(md!==null){ customModel=md.trim(); localStorage.setItem('anonCustomModel',customModel); refreshKeyStatus(); showToast('Model saved',true); } }
   else { var k=prompt('Optional API key (leave blank for local Ollama — it needs none):', keys.custom||''); if(k!==null){ keys.custom=k.trim(); localStorage.setItem(PROVIDERS.custom.store,keys.custom); showToast('Saved',true); } }
 }
@@ -1005,6 +1016,26 @@ function autoVersionCheck(){
     fetch(url,{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(txt){ var m=txt.match(/const APP_VERSION='([^']+)'/); if(m&&m[1]&&m[1]!==APP_VERSION) showUpdateBanner('v'+m[1]+' available — tap Update'); }).catch(function(){});
   }
 }
+function fireSparks(x,y){
+  var n=7;
+  for(var i=0;i<n;i++){
+    var sp=document.createElement('div'); sp.className='spark';
+    sp.style.left=x+'px'; sp.style.top=y+'px';
+    var ang=(Math.PI*2/n)*i + Math.random()*0.5; var dist=18+Math.random()*16;
+    sp.style.setProperty('--sx',(Math.cos(ang)*dist)+'px');
+    sp.style.setProperty('--sy',(Math.sin(ang)*dist)+'px');
+    sp.style.animation='sparkFly 0.45s ease-out forwards';
+    document.body.appendChild(sp);
+    setTimeout((function(el){return function(){el.remove();};})(sp),460);
+  }
+}
+document.addEventListener('pointerdown',function(e){
+  var b=e.target.closest('button, .pill, .quick, .swatch, .fx-opt, .chip, .stack-chip, .tpl, .pick-card, .model-setup-item, .hist, .drop-item, .mini-btn, .big-btn, .step-btn, .send-btn, .info-i, .theme-swatch');
+  if(!b) return;
+  b.classList.remove('press-burst'); void b.offsetWidth; b.classList.add('press-burst');
+  setTimeout(function(){ b.classList.remove('press-burst'); },460);
+  fireSparks(e.clientX, e.clientY);
+},{passive:true});
 function setupInstallPrompt(){ window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferredInstall=e; var b=document.getElementById('install-row'); if(b) b.style.display='block'; }); }
 function installApp(){ if(!deferredInstall){ showInfo('Add to Home Screen','In Chrome, tap the menu (3 dots) and choose "Add to Home Screen" or "Install app". It will then open fullscreen like a normal app.'); return; } deferredInstall.prompt(); deferredInstall.userChoice.then(function(){ deferredInstall=null; var b=document.getElementById('install-row'); if(b) b.style.display='none'; }); }
 function checkUpdate(){
