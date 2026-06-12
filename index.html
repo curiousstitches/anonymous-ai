@@ -381,15 +381,15 @@ textarea.ta:focus { border-color:var(--accent); }
     <div class="sec">
       <div class="sec-t">⚡ Providers</div>
       <div class="row">
-        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main AI source. Free uncensored models plus coding models. Get a key at openrouter.ai.')">i</i><span class="key-status" id="ks-or">off</span></div>
+        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main AI source. Free uncensored models plus coding models. Get a key at openrouter.ai.')">i</i><span class="key-status" id="ks-or">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
         <button class="mini-btn" onclick="setKey('or')">Set / Change Key</button>
       </div>
       <div class="row">
-        <div class="row-lbl"><span class="l">Chutes</span><i class="info-i" onclick="showInfo('Chutes','Optional second free source. Adds DeepSeek R1 and other open models. Get a key at chutes.ai. If a model on one provider is down, Auto can fall back to the other.')">i</i><span class="key-status" id="ks-chutes">off</span></div>
+        <div class="row-lbl"><span class="l">Chutes</span><i class="info-i" onclick="showInfo('Chutes','Optional second free source. Adds DeepSeek R1 and other open models. Get a key at chutes.ai. If a model on one provider is down, Auto can fall back to the other.')">i</i><span class="key-status" id="ks-chutes">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-chutes" onchange="setEnabled('chutes',this.checked)"><span class="tr"></span></label></div>
         <button class="mini-btn" onclick="setKey('chutes')">Set / Change Key</button>
       </div>
       <div class="row">
-        <div class="row-lbl"><span class="l">Venice.ai (direct)</span><i class="info-i" onclick="showInfo('Venice.ai','The source of the Venice uncensored model — a stronger, privacy-first relay than the free OpenRouter copy. Has a free tier (limited daily requests, no card). Sign up at venice.ai, create an API key, paste it here. Then pick &quot;Venice Uncensored (direct)&quot; from the model list.')">i</i><span class="key-status" id="ks-venice">off</span></div>
+        <div class="row-lbl"><span class="l">Venice.ai (direct)</span><i class="info-i" onclick="showInfo('Venice.ai','The source of the Venice uncensored model — a stronger, privacy-first relay than the free OpenRouter copy. Has a free tier (limited daily requests, no card). Sign up at venice.ai, create an API key, paste it here. Then pick &quot;Venice Uncensored (direct)&quot; from the model list.')">i</i><span class="key-status" id="ks-venice">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-venice" onchange="setEnabled('venice',this.checked)"><span class="tr"></span></label></div>
         <div class="row-d">Stronger uncensored. Free tier available at venice.ai.</div>
         <button class="mini-btn" onclick="setKey('venice')">Set / Change Key</button>
       </div>
@@ -525,6 +525,12 @@ textarea.ta:focus { border-color:var(--accent); }
         <div class="row-lbl"><span class="l">Export Everything</span><i class="info-i" onclick="showInfo('Export Everything','Saves all your chats to a file as a backup you can keep.')">i</i></div>
         <button class="mini-btn" onclick="exportAll()">💾 Backup All Chats</button>
       </div>
+      <div class="row">
+        <div class="row-lbl"><span class="l">Sync to Another Device</span><i class="info-i" onclick="showInfo('Sync Settings','Copies ALL your keys and settings into one code. Paste that code into this same app on another phone or PC to instantly set it up identically — no re-typing keys ever again. Treat the code like a password; it contains your keys.')">i</i></div>
+        <div class="row-d">Move your keys & settings to any device with one code.</div>
+        <button class="mini-btn" onclick="exportSettings()">📤 Copy My Setup Code</button>
+        <button class="mini-btn" onclick="importSettings()">📥 Paste a Setup Code</button>
+      </div>
     </div>
 
   </div>
@@ -556,7 +562,7 @@ textarea.ta:focus { border-color:var(--accent); }
 <div id="toast"></div>
 
 <script>
-const APP_VERSION='4.2';
+const APP_VERSION='4.4';
 
 // ── PROVIDERS ──
 const PROVIDERS = {
@@ -606,6 +612,11 @@ const SECTION_INFO = {
   'Other':'General all-rounders for everyday questions and writing.',
   'Custom':'Your own AI server (PC Ollama, Kaggle GPU). Unlimited and private.'
 };
+const THEMES = [
+  {id:'anon',name:'Anon',color:'#07080a'},{id:'black',name:'Black',color:'#000'},
+  {id:'midnight',name:'Midnight',color:'#0a0e1a'},{id:'crimson',name:'Crimson',color:'#120808'},
+  {id:'amber',name:'Amber',color:'#100b03'},{id:'ghost',name:'Light',color:'#f6f7f9'}
+];
 const FONTS = [
   {v:"'Share Tech Mono',monospace",l:'Share Tech Mono (terminal)'},
   {v:"'Inter',sans-serif",l:'Inter (clean)'},
@@ -669,6 +680,7 @@ const STACKS = ['Auto','TypeScript','JavaScript','Python','Go','Rust','Lua'];
 
 // ── STATE ──
 let keys = { or:'', chutes:'', venice:'', custom:'' };
+let enabled = { or:true, chutes:true, venice:true, custom:true };
 let customUrl='', customModel='';
 let currentModel='auto-code', currentChatId=null, history=[], generating=false, currentStep=1;
 let systemPrompt='', temperature=0.6, lenIdx=2;
@@ -689,6 +701,7 @@ window.onload=function(){
   gh.token = localStorage.getItem('anonGhToken')||''; gh.repo = localStorage.getItem('anonGhRepo')||'';
   keys.venice = localStorage.getItem(PROVIDERS.venice.store)||''; keys.custom = localStorage.getItem(PROVIDERS.custom.store)||'';
   customUrl = localStorage.getItem('anonCustomUrl')||''; customModel = localStorage.getItem('anonCustomModel')||'';
+  try{ var en=JSON.parse(localStorage.getItem('anonEnabled')||'{}'); ['or','chutes','venice','custom'].forEach(function(k){ if(en[k]===false) enabled[k]=false; }); }catch(e){}
   currentModel = localStorage.getItem('anonModel') || 'auto-code';
   if(currentModel==='auto-unc') currentModel='auto-unchat'; if(currentModel==='auto-chat') currentModel='auto-code';
   applyTheme(localStorage.getItem('anonTheme')||'anon');
@@ -712,7 +725,7 @@ window.onload=function(){
   applyAllFx();
   var cb=localStorage.getItem('anonCustomBg');
   if(cb){ var el=document.getElementById('custom-bg'); el.style.backgroundImage='url('+cb+')'; el.style.display='block'; }
-  refreshKeyStatus(); refreshGh();
+  refreshKeyStatus(); refreshGh(); refreshEnabledUI();
 
   if(keys.or || keys.chutes){
     document.getElementById('setup').style.display='none';
@@ -756,6 +769,8 @@ function refreshKeyStatus(){
   var cu=document.getElementById('ks-custom'); if(cu){ cu.textContent=customUrl?'on':'off'; cu.className='key-status '+(customUrl?'key-on':'key-off'); }
   var cl=document.getElementById('custom-url-label'); if(cl) cl.textContent=customUrl?(customModel||'(model not set)')+' @ '+customUrl.replace(/^https?:\/\//,'').slice(0,28):'Not set';
 }
+function setEnabled(which,on){ enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus(); showToast((PROVIDERS[which==='or'?'openrouter':which]||{name:which}).name+(on?' enabled':' disabled'),true); }
+function refreshEnabledUI(){ ['or','chutes','venice','custom'].forEach(function(k){ var el=document.getElementById('en-'+k); if(el) el.checked=enabled[k]!==false; }); }
 function setKey(which){
   var map={or:{l:'OpenRouter (sk-or-...)',s:PROVIDERS.openrouter.store},chutes:{l:'Chutes (cpk_...)',s:PROVIDERS.chutes.store},venice:{l:'Venice.ai',s:PROVIDERS.venice.store}};
   var m=map[which]; var v=prompt('Paste your '+m.l+' key:');
@@ -770,6 +785,9 @@ function setCustom(part){
 // ── MODEL DROP ──
 function badges(m){ var b=''; if(m.tags&&m.tags.indexOf('unc')>=0) b+='<span class="badge badge-unc">uncensored</span>'; b+='<span class="badge badge-free">free</span>'; return b; }
 function availability(m){
+  var key2enabled={openrouter:'or',chutes:'chutes',venice:'venice',custom:'custom'};
+  var ek=key2enabled[m.p];
+  if(ek && enabled[ek]===false) return {ok:false,t:'⏸️ turned off'};
   if(m.p==='openrouter'){ return keys.or?{ok:true,t:'✅ ready'}:{ok:false,t:'🔑 needs OpenRouter key'}; }
   if(m.p==='chutes'){ return keys.chutes?{ok:true,t:'✅ ready'}:{ok:false,t:'🔑 needs Chutes key'}; }
   if(m.p==='venice'){ return keys.venice?{ok:true,t:'✅ ready'}:{ok:false,t:'🔑 needs Venice key'}; }
@@ -924,6 +942,23 @@ function renderHist(){
 }
 function openChat(id){ var c=loadChats().find(function(x){return x.id===id;}); if(!c) return; currentChatId=id; history=c.messages; document.getElementById('messages').innerHTML=''; history.forEach(function(m){ var disp=m._display||(typeof m.content==='string'?m.content:'(files)'); addMsg(m.role==='user'?'user':'ai',disp); if(m.role==='assistant'){ var ais=document.querySelectorAll('.msg.ai'); addMsgActions(ais[ais.length-1].id||(ais[ais.length-1].id='ai-r-'+Date.now()), typeof m.content==='string'?m.content:''); } }); closeAll(); }
 function delChat(id){ if(!confirm('Delete this chat?')) return; saveChats(loadChats().filter(function(c){return c.id!==id;})); if(id===currentChatId) newChat(); renderHist(); }
+function _settingsKeys(){ return ['anonKeyOR','anonKeyChutes','anonKeyVenice','anonKeyCustom','anonCustomUrl','anonCustomModel','anonEnabled','anonModel','anonTheme','anonFont','anonScale','anonSys','anonPersona','anonTemp','anonLen','anonGhToken','anonGhRepo','anonFx','anonFxMaster','anonBg','anonInter','anonAccent']; }
+function exportSettings(){
+  var bag={}; _settingsKeys().forEach(function(k){ var v=localStorage.getItem(k); if(v!==null) bag[k]=v; });
+  var code='ANON1:'+btoa(unescape(encodeURIComponent(JSON.stringify(bag))));
+  navigator.clipboard.writeText(code).then(function(){ showInfo('Setup code copied','Your full setup (keys + settings) is now copied. On another device, open this app, go to Settings → Sync → Paste a Setup Code, and paste it. Keep this code private — it contains your keys.'); }, function(){ showInfo('Your setup code','Copy this and paste it into the app on another device (Settings → Sync → Paste a Setup Code):<br><br><textarea readonly style=\'width:100%;height:80px;background:#0e1014;color:#2bff88;border:1px solid #2a2a2a;border-radius:8px;padding:8px;font-size:11px\'>'+code+'</textarea>'); });
+}
+function importSettings(){
+  var code=prompt('Paste your Setup Code here:'); if(!code||!code.trim()) return;
+  code=code.trim();
+  if(code.indexOf('ANON1:')!==0){ showToast('That does not look like a valid setup code'); return; }
+  try{
+    var bag=JSON.parse(decodeURIComponent(escape(atob(code.slice(6)))));
+    Object.keys(bag).forEach(function(k){ localStorage.setItem(k,bag[k]); });
+    showInfo('Setup imported!','All your keys and settings are restored. The app will now reload.');
+    setTimeout(function(){ location.reload(); }, 1500);
+  }catch(e){ showToast('Could not read that code — copy it again carefully'); }
+}
 function exportAll(){ var chats=loadChats(); if(chats.length===0){ showToast('No chats to export'); return; } var txt='ANONYMOUS AI - Full Backup\n\n'; chats.forEach(function(c){ txt+='=== '+c.title+' ===\n'; c.messages.forEach(function(m){ var cc=typeof m.content==='string'?m.content:(m._display||'(files)'); txt+=(m.role==='user'?'YOU: ':'AI: ')+cc+'\n\n'; }); txt+='\n'; }); dl(txt,'anonymous-ai-backup-'+Date.now()+'.txt'); showToast('Backup saved',true); }
 function exportChat(){ if(history.length===0){ showToast('Nothing yet'); return; } var txt='ANONYMOUS AI - Chat\n\n'; history.forEach(function(m){ var cc=typeof m.content==='string'?m.content:(m._display||'(files)'); txt+=(m.role==='user'?'YOU:\n':'AI:\n')+cc+'\n\n'; }); dl(txt,'anon-chat-'+Date.now()+'.txt'); showToast('Chat saved',true); }
 function dl(text,name,mime){ var blob=new Blob([text],{type:mime||'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url); }
@@ -1076,6 +1111,8 @@ async function runCompletion(){
   for(var ci=0; ci<chain.length && !answered; ci++){
     var modelId=chain[ci];
     var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
+    var enMap={openrouter:'or',chutes:'chutes',venice:'venice',custom:'custom'};
+    if(enabled[enMap[prov]]===false){ lastErr=PROVIDERS[prov].name+' is turned off'; continue; }
     var keyMap={openrouter:keys.or,chutes:keys.chutes,venice:keys.venice,custom:keys.custom};
     var key=keyMap[prov]||'';
     var endpoint = prov==='custom' ? customUrl : PROVIDERS[prov].url;
