@@ -383,17 +383,17 @@ textarea.ta:focus { border-color:var(--accent); }
       <div class="sec-t">⚡ Providers</div>
       <div class="row-d" style="margin:0 4px 10px">Each switch turns a provider <b>ON</b> or <b>OFF</b>. <b>ON</b> = the app can use it. <b>OFF</b> = ignored (your key is kept). <b>NO KEY</b> = paste a key first.</div>
       <div class="row">
-        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main AI source. Free uncensored models plus coding models. Get a key at openrouter.ai.')">i</i><span class="key-status" id="ks-or">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
-        <div class="masked-key" id="mk-or">no key set</div><button class="mini-btn" onclick="setKey('or')">Set / Change Key</button>
+        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main free AI source.<br><br>1. Get a key: open <b>openrouter.ai/keys</b> → Create Key<br>2. Paste it here with Set/Change Key<br>3. IMPORTANT: to use free/uncensored models, open <b>openrouter.ai/settings/privacy</b> → Data Policies → enable free model training + publication → Save<br><br>Use 🔍 Test Connection to confirm it works.')">i</i><span class="key-status" id="ks-or">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
+        <div class="masked-key" id="mk-or">no key set</div><button class="mini-btn" onclick="setKey('or')">Set / Change Key</button><button class="mini-btn" onclick="testProvider('or')">🔍 Test Connection</button>
       </div>
       <div class="row">
-        <div class="row-lbl"><span class="l">Chutes</span><i class="info-i" onclick="showInfo('Chutes','Optional second free source. Adds DeepSeek R1 and other open models. Get a key at chutes.ai. If a model on one provider is down, Auto can fall back to the other.')">i</i><span class="key-status" id="ks-chutes">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-chutes" onchange="setEnabled('chutes',this.checked)"><span class="tr"></span></label></div>
-        <div class="masked-key" id="mk-chutes">no key set</div><button class="mini-btn" onclick="setKey('chutes')">Set / Change Key</button>
+        <div class="row-lbl"><span class="l">Chutes</span><i class="info-i" onclick="showInfo('Chutes','Optional second free source (DeepSeek R1 and more).<br><br>1. Get a key at <b>chutes.ai</b><br>2. Paste it here<br>3. Tap 🔍 Test Connection<br><br>If one provider is down, Auto falls back to the other.')">i</i><span class="key-status" id="ks-chutes">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-chutes" onchange="setEnabled('chutes',this.checked)"><span class="tr"></span></label></div>
+        <div class="masked-key" id="mk-chutes">no key set</div><button class="mini-btn" onclick="setKey('chutes')">Set / Change Key</button><button class="mini-btn" onclick="testProvider('chutes')">🔍 Test Connection</button>
       </div>
       <div class="row">
-        <div class="row-lbl"><span class="l">Venice.ai (direct)</span><i class="info-i" onclick="showInfo('Venice.ai','The source of the Venice uncensored model — a stronger, privacy-first relay than the free OpenRouter copy. Has a free tier (limited daily requests, no card). Sign up at venice.ai, create an API key, paste it here. Then pick &quot;Venice Uncensored (direct)&quot; from the model list.')">i</i><span class="key-status" id="ks-venice">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-venice" onchange="setEnabled('venice',this.checked)"><span class="tr"></span></label></div>
+        <div class="row-lbl"><span class="l">Venice.ai (direct)</span><i class="info-i" onclick="showInfo('Venice.ai','Stronger uncensored source, privacy-first.<br><br>1. Sign up at <b>venice.ai</b> (free tier, no card)<br>2. Create an API key in their dashboard<br>3. Paste it here, tap 🔍 Test Connection<br>4. Pick \'Venice Uncensored\' from the model menu')">i</i><span class="key-status" id="ks-venice">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-venice" onchange="setEnabled('venice',this.checked)"><span class="tr"></span></label></div>
         <div class="row-d">Stronger uncensored. Free tier available at venice.ai.</div>
-        <div class="masked-key" id="mk-venice">no key set</div><button class="mini-btn" onclick="setKey('venice')">Set / Change Key</button>
+        <div class="masked-key" id="mk-venice">no key set</div><button class="mini-btn" onclick="setKey('venice')">Set / Change Key</button><button class="mini-btn" onclick="testProvider('venice')">🔍 Test Connection</button>
       </div>
     </div>
 
@@ -404,7 +404,7 @@ textarea.ta:focus { border-color:var(--accent); }
         <div class="row-d">Connect your own server: <strong id="custom-url-label">Not set</strong></div>
         <button class="mini-btn" onclick="setCustom('url')">1. Set Endpoint URL</button>
         <button class="mini-btn" onclick="setCustom('model')">2. Set Model Name</button>
-        <button class="mini-btn" onclick="setCustom('key')">3. Set Key (optional)</button>
+        <button class="mini-btn" onclick="setCustom('key')">3. Set Key (optional)</button><button class="mini-btn" onclick="testProvider('custom')">🔍 Test Connection</button>
       </div>
     </div>
 
@@ -564,7 +564,7 @@ textarea.ta:focus { border-color:var(--accent); }
 <div id="toast"></div>
 
 <script>
-const APP_VERSION='4.7';
+const APP_VERSION='4.8';
 
 // ── PROVIDERS ──
 const PROVIDERS = {
@@ -777,6 +777,28 @@ function refreshKeyStatus(){
   applyStatus('ks-or','or'); applyStatus('ks-chutes','chutes'); applyStatus('ks-venice','venice'); applyStatus('ks-custom','custom');
   setMaskedKey('mk-or', keys.or); setMaskedKey('mk-chutes', keys.chutes); setMaskedKey('mk-venice', keys.venice); setMaskedKey('mk-gh', gh.token);
   var cl=document.getElementById('custom-url-label'); if(cl) cl.textContent=customUrl?(customModel||'(model not set)')+' @ '+customUrl.replace(/^https?:\/\//,'').slice(0,28):'Not set';
+}
+async function testProvider(prov){
+  var key = prov==='custom'?keys.custom:keys[prov];
+  var url = prov==='custom'?customUrl:PROVIDERS[prov].url;
+  var testModel = {openrouter:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', chutes:'deepseek-ai/DeepSeek-R1', venice:'venice-uncensored', custom:customModel}[prov];
+  if(prov!=='custom' && !key){ showInfo('No key yet','Add a '+PROVIDERS[prov].name+' key first, then test.'); return; }
+  if(prov==='custom' && (!customUrl||!customModel)){ showInfo('Set up endpoint','Set your Custom URL and model name first.'); return; }
+  showToast('Testing '+PROVIDERS[prov].name+'...');
+  try{
+    var hdrs={'Content-Type':'application/json'}; if(key) hdrs['Authorization']='Bearer '+key;
+    var res=await fetch(url,{method:'POST',headers:hdrs,body:JSON.stringify({model:testModel,messages:[{role:'user',content:'hi'}],max_tokens:10})});
+    var txt=await res.text(); var msg;
+    try{ var j=JSON.parse(txt); msg=(j.error&&j.error.message)||(j.choices?'(model replied)':txt); }catch(e){ msg=txt; }
+    if(res.ok){ showInfo('\u2705 '+PROVIDERS[prov].name+' WORKS','Status '+res.status+' — your key and a test model both work. If the app still fails on a specific model, that model name may be stale; tell Claude which one.'); return; }
+    var hint='';
+    if(/data policy|publication|no endpoints/i.test(msg)){
+      hint='<br><br><b>This is the data-policy block.</b> It must be fixed at the ACCOUNT level (a workspace guardrail can only restrict, never unlock):<br><br>1. Open <b>openrouter.ai/settings/privacy</b><br>2. Under <b>Data Policies</b>, ENABLE free model <b>training</b> AND <b>publication</b><br>3. Save<br><br>If that error names a model, the model may have been renamed/removed — tell Claude to refresh the model list.';
+    } else if(res.status===401){ hint='<br><br>Your key is invalid or expired. Create a new one at openrouter.ai \u2192 Keys.'; }
+    else if(res.status===402){ hint='<br><br>Needs credits. Add a little balance, or use only :free models.'; }
+    else if(res.status===429){ hint='<br><br>Rate-limited or daily free cap hit. Wait a bit, or add a second provider (Chutes).'; }
+    showInfo('\u26a0\ufe0f '+PROVIDERS[prov].name+' error '+res.status,'Exact message from the server:<br><br><b>'+esc(String(msg)).slice(0,320)+'</b>'+hint);
+  }catch(e){ showInfo('Connection failed', e.message==='Failed to fetch'?'No internet, or this device cannot reach that endpoint (common with a Custom/Local URL on a different network).':esc(e.message)); }
 }
 function setEnabled(which,on){ enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus(); showToast((PROVIDERS[which==='or'?'openrouter':which]||{name:which}).name+(on?' enabled':' disabled'),true); }
 function refreshEnabledUI(){ ['or','chutes','venice','custom'].forEach(function(k){ var el=document.getElementById('en-'+k); if(el) el.checked=enabled[k]!==false; }); }
@@ -1183,10 +1205,10 @@ async function runCompletion(){
     }
   }
   var tn2=document.getElementById(typId); if(tn2) tn2.remove();
-  if(dataPolicyHit && uncWanted){ showInfo('Turn ON one OpenRouter switch','Your uncensored models are being BLOCKED by a privacy setting — that is why it falls back to a restricted AI. Fix it once:<br><br>1. Open <b>openrouter.ai</b> and log in<br>2. Go to <b>Settings → Privacy</b><br>3. Turn <b>ON</b>: <b>"Free endpoints that may train on request data"</b><br>4. Tap <b>Save</b><br>5. Come back and try the uncensored model again<br><br>That one switch unlocks Dolphin/Venice. You stay anonymous.'); }
+  if(dataPolicyHit && uncWanted){ showInfo('Allow free models (account level)','OpenRouter blocks free models until you allow them at the ACCOUNT level. A workspace guardrail can only restrict, never unlock — so this must be set here:<br><br>1. Open <b>openrouter.ai/settings/privacy</b><br>2. Under <b>Data Policies</b>, ENABLE free model <b>training</b> AND <b>publication</b><br>3. Tap <b>Save</b><br><br>Tip: use Settings \u2192 Providers \u2192 <b>🔍 Test Connection</b> to see the exact server message.'); }
   if(!answered && lastErr!=='__stopped__'){
     if(lastErr&&(lastErr.toLowerCase().indexOf('provider')>=0||lastErr.toLowerCase().indexOf('data policy')>=0||lastErr.toLowerCase().indexOf('privacy')>=0)){
-      showInfo('Free model needs one setting','OpenRouter blocks some free models until you flip one switch. Fix once:<br><br>1. openrouter.ai<br>2. Settings &rarr; Privacy<br>3. Turn ON "Free endpoints that may train on request data"<br>4. Save, come back, try again<br><br>You stay anonymous.');
+      showInfo('Allow free models (account level)','OpenRouter blocks free models until you allow them at the ACCOUNT level. A workspace guardrail can only restrict, never unlock — so this must be set here:<br><br>1. Open <b>openrouter.ai/settings/privacy</b><br>2. Under <b>Data Policies</b>, ENABLE free model <b>training</b> AND <b>publication</b><br>3. Tap <b>Save</b><br><br>Tip: use Settings \u2192 Providers \u2192 <b>🔍 Test Connection</b> to see the exact server message.');
     } else if(uncWanted){ showInfo('Uncensored model did not respond','The exact message from the server was:<br><br><b>'+(lastErr||'no response')+'</b><br><br>Most common fixes:<br>1. Turn ON "Free endpoints that may train on request data" in openrouter.ai → Settings → Privacy<br>2. You may have hit today\'s free limit — wait, or add a Chutes key in Settings for a second free source<br>3. Make sure your OpenRouter key is still valid'); }
     else showToast(lastErr||'All free AIs busy — try again');
   } else if(lastErr==='__stopped__'){ showToast('Stopped',true); }
