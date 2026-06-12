@@ -55,7 +55,14 @@ You don't write code. You say *"build me a ___"* and it writes every file, ready
 ```
 
 **Get a free key** 🔑 — [openrouter.ai](https://openrouter.ai) → Sign Up → Keys → Create Key.
-Then in **Settings → Privacy**, turn ON *"Free endpoints that may train on request data"* (this unlocks the free models).
+
+**⚠️ One-time unlock for free/uncensored models** (this is the step everyone misses):
+1. openrouter.ai → **Workspace → Guardrails → Workspace Guardrail → Model & Provider Access**
+2. Turn **ON**: *"Free endpoints that may train on request data"*
+3. Turn **ON**: *"Free endpoints that may publish prompts"*
+4. **Tap Save** (changes don't apply until you Save)
+
+Without this, uncensored models like Dolphin/Venice come back blocked. With it, they work.
 
 **Install it** 📲 — open the app in Chrome → menu (⋮) → **Add to Home Screen**. Now it's fullscreen, like any app.
 

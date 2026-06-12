@@ -231,8 +231,9 @@ textarea.ta:focus { border-color:var(--accent); }
 .stat .sl { color:var(--muted2); }
 .stat .sv { font-weight:700; color:var(--accent); font-family:var(--mono); }
 .key-status { font-family:var(--mono); font-size:10px; padding:3px 7px; border-radius:5px; }
-.key-on { background:rgba(43,255,136,0.14); color:var(--accent); }
-.key-off { background:var(--border); color:var(--muted2); }
+.masked-key { font-family:var(--mono); font-size:11px; color:var(--accent-dim); margin:6px 0 4px; letter-spacing:0.05em; }
+.key-on { background:rgba(43,255,136,0.18); color:var(--accent); font-weight:700; }
+.key-off { background:rgba(255,180,84,0.12); color:var(--warn); font-weight:700; }
 
 /* BUILDER sheet (bottom) */
 .builder { position:fixed; left:0; right:0; bottom:0; max-height:82vh; background:var(--surface); border-top:1px solid var(--border); border-radius:18px 18px 0 0; z-index:120; transform:translateY(110%); transition:transform .3s cubic-bezier(.3,1.2,.5,1); display:flex; flex-direction:column; }
@@ -380,18 +381,19 @@ textarea.ta:focus { border-color:var(--accent); }
 
     <div class="sec">
       <div class="sec-t">⚡ Providers</div>
+      <div class="row-d" style="margin:0 4px 10px">Each switch turns a provider <b>ON</b> or <b>OFF</b>. <b>ON</b> = the app can use it. <b>OFF</b> = ignored (your key is kept). <b>NO KEY</b> = paste a key first.</div>
       <div class="row">
         <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main AI source. Free uncensored models plus coding models. Get a key at openrouter.ai.')">i</i><span class="key-status" id="ks-or">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
-        <button class="mini-btn" onclick="setKey('or')">Set / Change Key</button>
+        <div class="masked-key" id="mk-or">no key set</div><button class="mini-btn" onclick="setKey('or')">Set / Change Key</button>
       </div>
       <div class="row">
         <div class="row-lbl"><span class="l">Chutes</span><i class="info-i" onclick="showInfo('Chutes','Optional second free source. Adds DeepSeek R1 and other open models. Get a key at chutes.ai. If a model on one provider is down, Auto can fall back to the other.')">i</i><span class="key-status" id="ks-chutes">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-chutes" onchange="setEnabled('chutes',this.checked)"><span class="tr"></span></label></div>
-        <button class="mini-btn" onclick="setKey('chutes')">Set / Change Key</button>
+        <div class="masked-key" id="mk-chutes">no key set</div><button class="mini-btn" onclick="setKey('chutes')">Set / Change Key</button>
       </div>
       <div class="row">
         <div class="row-lbl"><span class="l">Venice.ai (direct)</span><i class="info-i" onclick="showInfo('Venice.ai','The source of the Venice uncensored model — a stronger, privacy-first relay than the free OpenRouter copy. Has a free tier (limited daily requests, no card). Sign up at venice.ai, create an API key, paste it here. Then pick &quot;Venice Uncensored (direct)&quot; from the model list.')">i</i><span class="key-status" id="ks-venice">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-venice" onchange="setEnabled('venice',this.checked)"><span class="tr"></span></label></div>
         <div class="row-d">Stronger uncensored. Free tier available at venice.ai.</div>
-        <button class="mini-btn" onclick="setKey('venice')">Set / Change Key</button>
+        <div class="masked-key" id="mk-venice">no key set</div><button class="mini-btn" onclick="setKey('venice')">Set / Change Key</button>
       </div>
     </div>
 
@@ -412,7 +414,7 @@ textarea.ta:focus { border-color:var(--accent); }
       <div class="row">
         <div class="row-lbl"><span class="l">GitHub Token</span><i class="info-i" onclick="showInfo('GitHub Token','Lets the app save your builds straight to GitHub with one tap — no terminal, ever. Get one at github.com → Settings → Developer settings → Personal access tokens → Fine-grained → give it Contents read/write on your repo. Stored only on your phone.')">i</i><span class="key-status" id="ks-gh">off</span></div>
         <div class="row-d">One-tap push your builds to GitHub. No git, no terminal.</div>
-        <button class="mini-btn" onclick="setGh('token')">Set / Change Token</button>
+        <div class="masked-key" id="mk-gh">no token set</div><button class="mini-btn" onclick="setGh('token')">Set / Change Token</button>
       </div>
       <div class="row">
         <div class="row-lbl"><span class="l">Target Repo</span><i class="info-i" onclick="showInfo('Target Repo','Where your builds get saved. Format: yourname/reponame (example: curiousstitches/anonymous-ai). The repo must already exist on GitHub.')">i</i></div>
@@ -562,7 +564,7 @@ textarea.ta:focus { border-color:var(--accent); }
 <div id="toast"></div>
 
 <script>
-const APP_VERSION='4.4';
+const APP_VERSION='4.7';
 
 // ── PROVIDERS ──
 const PROVIDERS = {
@@ -761,12 +763,19 @@ function buildSetupPick(){
 function pickSetup(el,id){ document.querySelectorAll('.pick-card').forEach(function(x){x.classList.remove('selected');}); el.classList.add('selected'); currentModel=id; }
 function finishSetup(){ localStorage.setItem('anonModel',currentModel); document.getElementById('setup').style.display='none'; document.getElementById('app').style.display='flex'; updateHdr(); newChat(); }
 
+function setMaskedKey(id,k){ var el=document.getElementById(id); if(el) el.textContent = k ? ('🔑 '+maskKey(k)) : 'no key set'; }
+function maskKey(k){ if(!k) return ''; if(k.length<=8) return '••••'; return k.slice(0,4)+'••••'+k.slice(-4); }
+function statusFor(prov){
+  var hasKey = (prov==='custom') ? !!customUrl : !!keys[prov];
+  var en = enabled[prov]!==false;
+  if(!hasKey) return {t:'NO KEY', c:'key-off'};
+  if(!en) return {t:'OFF', c:'key-off'};
+  return {t:'ON', c:'key-on'};
+}
+function applyStatus(id,prov){ var el=document.getElementById(id); if(!el) return; var st=statusFor(prov); el.textContent=st.t; el.className='key-status '+st.c; }
 function refreshKeyStatus(){
-  var a=document.getElementById('ks-or'), b=document.getElementById('ks-chutes');
-  if(a){ a.textContent=keys.or?'on':'off'; a.className='key-status '+(keys.or?'key-on':'key-off'); }
-  if(b){ b.textContent=keys.chutes?'on':'off'; b.className='key-status '+(keys.chutes?'key-on':'key-off'); }
-  var v=document.getElementById('ks-venice'); if(v){ v.textContent=keys.venice?'on':'off'; v.className='key-status '+(keys.venice?'key-on':'key-off'); }
-  var cu=document.getElementById('ks-custom'); if(cu){ cu.textContent=customUrl?'on':'off'; cu.className='key-status '+(customUrl?'key-on':'key-off'); }
+  applyStatus('ks-or','or'); applyStatus('ks-chutes','chutes'); applyStatus('ks-venice','venice'); applyStatus('ks-custom','custom');
+  setMaskedKey('mk-or', keys.or); setMaskedKey('mk-chutes', keys.chutes); setMaskedKey('mk-venice', keys.venice); setMaskedKey('mk-gh', gh.token);
   var cl=document.getElementById('custom-url-label'); if(cl) cl.textContent=customUrl?(customModel||'(model not set)')+' @ '+customUrl.replace(/^https?:\/\//,'').slice(0,28):'Not set';
 }
 function setEnabled(which,on){ enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus(); showToast((PROVIDERS[which==='or'?'openrouter':which]||{name:which}).name+(on?' enabled':' disabled'),true); }
@@ -992,7 +1001,7 @@ function toggleVoice(){
 }
 
 // ── GITHUB (no terminal) ──
-function refreshGh(){ var a=document.getElementById('ks-gh'); if(a){ a.textContent=gh.token?'on':'off'; a.className='key-status '+(gh.token?'key-on':'key-off'); } var r=document.getElementById('gh-repo-label'); if(r) r.textContent=gh.repo||'Not set'; }
+function refreshGh(){ var a=document.getElementById('ks-gh'); if(a){ a.textContent=gh.token?'on':'off'; a.className='key-status '+(gh.token?'key-on':'key-off'); } var r=document.getElementById('gh-repo-label'); if(r) r.textContent=gh.repo||'Not set'; setMaskedKey('mk-gh', gh.token); }
 function setGh(which){
   if(which==='token'){ var t=prompt('Paste your GitHub token (stored only on your phone):'); if(t&&t.trim()){ gh.token=t.trim(); localStorage.setItem('anonGhToken',gh.token); refreshGh(); showToast('GitHub token saved',true); } }
   else { var r=prompt('Repo as you/name (e.g. curiousstitches/anonymous-ai):'); if(r&&r.trim()){ gh.repo=r.trim().replace(/^https?:\/\/github.com\//,'').replace(/\.git$/,''); localStorage.setItem('anonGhRepo',gh.repo); refreshGh(); showToast('Repo set: '+gh.repo,true); } }
