@@ -192,11 +192,12 @@ body.fx-scan::after { content:''; position:fixed; inset:0; z-index:2; pointer-ev
 .hist-empty { text-align:center; color:var(--muted2); font-size:13px; padding:38px 20px; line-height:1.6; }
 
 .sec { margin-bottom:22px; }
-.sec-t { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted2); margin-bottom:11px; padding:0 4px; }
+.sec-t { font-family:var(--mono); font-size:14px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text); margin-bottom:4px; padding:8px 0 8px 12px; border-left:3px solid var(--accent); font-weight:700; background:linear-gradient(90deg,rgba(43,255,136,0.06),transparent); border-radius:0 6px 6px 0; }
+.sec-d { font-size:12.5px; color:var(--muted2); line-height:1.55; margin:0 4px 12px; padding:0 4px; }
 .row { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:13px; margin-bottom:10px; }
 .row-lbl { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-.row-lbl .l { font-size:14px; font-weight:600; flex:1; }
-.info-i { width:16px; height:16px; border-radius:50%; background:var(--border); color:var(--text); font-size:10px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-style:normal; }
+.row-lbl .l { font-size:15px; font-weight:700; flex:1; }
+.info-i { width:19px; height:19px; border-radius:50%; background:var(--accent); color:var(--accent-text); font-size:12px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-style:normal; }
 .info-i:active { background:var(--accent); color:var(--accent-text); }
 .row-d { font-size:12px; color:var(--muted2); line-height:1.5; margin-bottom:10px; }
 .toggle { position:relative; width:46px; height:26px; flex-shrink:0; }
@@ -224,14 +225,15 @@ textarea.ta { width:100%; background:var(--bg); border:1.5px solid var(--border)
 textarea.ta:focus { border-color:var(--accent); }
 .mini-btn { background:var(--bg); border:1.5px solid var(--border); color:var(--text); border-radius:9px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; width:100%; margin-top:6px; }
 .mini-btn:active { border-color:var(--accent); }
+.mini-btn[onclick*="testProvider"] { border-color:var(--accent); color:var(--accent); font-weight:700; }
 .chip { display:inline-block; background:var(--bg); border:1.5px solid var(--border); border-radius:16px; padding:7px 12px; font-size:12px; margin:0 6px 6px 0; cursor:pointer; }
 .chip.active { border-color:var(--accent); color:var(--accent); }
 .stat { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
 .stat:last-child { border-bottom:none; }
 .stat .sl { color:var(--muted2); }
 .stat .sv { font-weight:700; color:var(--accent); font-family:var(--mono); }
-.key-status { font-family:var(--mono); font-size:10px; padding:3px 7px; border-radius:5px; }
-.masked-key { font-family:var(--mono); font-size:11px; color:var(--accent-dim); margin:6px 0 4px; letter-spacing:0.05em; }
+.key-status { font-family:var(--mono); font-size:11px; font-weight:700; padding:4px 9px; border-radius:6px; letter-spacing:0.03em; }
+.masked-key { font-family:var(--mono); font-size:12px; color:var(--accent); margin:8px 0 6px; letter-spacing:0.05em; font-weight:600; }
 .key-on { background:rgba(43,255,136,0.18); color:var(--accent); font-weight:700; }
 .key-off { background:rgba(255,180,84,0.12); color:var(--warn); font-weight:700; }
 
@@ -399,6 +401,7 @@ textarea.ta:focus { border-color:var(--accent); }
 
     <div class="sec">
       <div class="sec-t">🖥️ Custom / Local Endpoint <span class="badge badge-free">unlimited</span></div>
+      <div class="sec-d">Connect your OWN AI server (your PC or a free GPU) for unlimited, private, uncensored AI. See the help (i) for steps.</div>
       <div class="row">
         <div class="row-lbl"><span class="l">Your own AI server</span><i class="info-i" onclick="showInfo('Custom / Local Endpoint','Point the app at ANY OpenAI-compatible AI server you control — and get truly unlimited, uncensored, free AI:<br><br>• <b>Your PC (Ollama):</b> run an uncensored model like dolphin-mistral on your computer, free forever, no limits.<br>• <b>Kaggle free GPU:</b> run a bigger model on Kaggle&apos;s free GPU and connect over the internet.<br>• <b>Venice / Featherless:</b> paste their endpoint + key.<br><br>Set the Base URL, the Model name, and an optional key. Then pick &quot;My Custom / Local&quot; from the model list.')">i</i><span class="key-status" id="ks-custom">off</span></div>
         <div class="row-d">Connect your own server: <strong id="custom-url-label">Not set</strong></div>
@@ -411,6 +414,7 @@ textarea.ta:focus { border-color:var(--accent); }
 
     <div class="sec">
       <div class="sec-t">🚀 GitHub (no terminal)</div>
+      <div class="sec-d">Save the apps the AI builds straight to GitHub with one tap — no terminal needed.</div>
       <div class="row">
         <div class="row-lbl"><span class="l">GitHub Token</span><i class="info-i" onclick="showInfo('GitHub Token','Lets the app save your builds straight to GitHub with one tap — no terminal, ever. Get one at github.com → Settings → Developer settings → Personal access tokens → Fine-grained → give it Contents read/write on your repo. Stored only on your phone.')">i</i><span class="key-status" id="ks-gh">off</span></div>
         <div class="row-d">One-tap push your builds to GitHub. No git, no terminal.</div>
@@ -424,6 +428,7 @@ textarea.ta:focus { border-color:var(--accent); }
     </div>
     <div class="sec">
       <div class="sec-t">🎨 Appearance</div>
+      <div class="sec-d">Change how the app LOOKS — colors, font, and text size. None of this affects the AI, just the look.</div>
       <div class="row">
         <div class="row-lbl"><span class="l">Theme</span><i class="info-i" onclick="showInfo('Theme','Changes all app colors. Tap any swatch to switch instantly.')">i</i></div>
         <div class="grid3" id="theme-grid"></div>
@@ -440,6 +445,7 @@ textarea.ta:focus { border-color:var(--accent); }
 
     <div class="sec">
       <div class="sec-t">🧠 AI Behavior</div>
+      <div class="sec-d">Change how the AI ACTS — its personality, how creative it is, and how long its answers are.</div>
       <div class="row">
         <div class="row-lbl"><span class="l">Personalities</span><i class="info-i" onclick="showInfo('Personalities','One-tap personas. Tap one and the AI acts that way in every chat. Tap again to turn off.')">i</i></div>
         <div class="row-d">Tap one — the AI becomes it.</div>
@@ -461,6 +467,7 @@ textarea.ta:focus { border-color:var(--accent); }
 
     <div class="sec">
       <div class="sec-t">✨ Special <span class="badge badge-beta">BETA</span></div>
+      <div class="sec-d">Fun extra visuals (3D, glow, animated backgrounds). If your phone feels slow, turn the Master Switch off.</div>
       <div class="row">
         <div class="row-lbl"><span class="l">Master Switch</span><i class="info-i" onclick="showInfo('Master Switch','Turns ALL special effects on/off at once. If your phone feels slow or hot, turn this off — everything goes back to normal instantly.')">i</i>
           <label class="toggle"><input type="checkbox" id="fx-master" onchange="setFxMaster(this.checked)"><span class="tr"></span></label></div>
@@ -503,6 +510,7 @@ textarea.ta:focus { border-color:var(--accent); }
 
     <div class="sec">
       <div class="sec-t">📊 Usage</div>
+      <div class="sec-d">A simple count of what you have used this session. Free models always cost $0.</div>
       <div class="row">
         <div class="row-lbl"><span class="l">This Session</span><i class="info-i" onclick="showInfo('Usage','Messages sent and rough word count handled. Free models = always $0.')">i</i></div>
         <div class="stat"><span class="sl">Messages</span><span class="sv" id="st-msgs">0</span></div>
@@ -514,6 +522,7 @@ textarea.ta:focus { border-color:var(--accent); }
 
     <div class="sec">
       <div class="sec-t">🔄 App</div>
+      <div class="sec-d">Update the app, install it to your home screen, back up your chats, and sync to another device.</div>
       <div class="row" id="install-row" style="display:none">
         <div class="row-lbl"><span class="l">Install as App</span><i class="info-i" onclick="showInfo('Install as App','Adds Anonymous AI to your home screen so it opens fullscreen like a normal app — no browser bars. You can also do this from the Chrome menu.')">i</i></div>
         <button class="mini-btn" onclick="installApp()">📲 Install to Home Screen</button>
@@ -564,7 +573,7 @@ textarea.ta:focus { border-color:var(--accent); }
 <div id="toast"></div>
 
 <script>
-const APP_VERSION='4.8';
+const APP_VERSION='5.0';
 
 // ── PROVIDERS ──
 const PROVIDERS = {
@@ -586,6 +595,7 @@ const MODELS = [
   { p:'custom',     id:'__custom_code__',                       name:'My Local Coder',   desc:'Your Ollama dolphin-coder (best, unlimited)', cat:'UnCoding', tags:['unc'] },
   // ===== UNCENSORED CHAT (human, expressive, flirty) =====
   { p:'openrouter', id:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', name:'Dolphin (Venice)', desc:'Warm, human, flirty · free', cat:'UnChat', tags:['unc'] },
+  { p:'openrouter', id:'venice/uncensored:free', name:'Venice Uncensored (alt)', desc:'Same model, alternate name · free', cat:'UnChat', tags:['unc'] },
   { p:'venice',     id:'venice-uncensored',                     name:'Venice Uncensored', desc:'Venice.ai direct · most expressive', cat:'UnChat', tags:['unc'] },
   { p:'custom',     id:'__custom__',                            name:'My Local Companion', desc:'Your Ollama dolphin/Hermes (unlimited)', cat:'UnChat', tags:['unc'] },
   // ===== EVERYTHING ELSE (general purpose) =====
@@ -604,7 +614,7 @@ MODELS.concat(META).forEach(function(m){ if(!MODEL_INDEX[m.id]) MODEL_INDEX[m.id
 const AUTO_CHAINS = {
   'auto-code'  :['nvidia/nemotron-3-super-120b-a12b:free','moonshotai/kimi-k2.6:free','poolside/laguna-m.1:free','openai/gpt-oss-120b:free','deepseek-ai/DeepSeek-R1','openrouter/free'],
   'auto-uncode':['deepseek-ai/DeepSeek-R1','cognitivecomputations/dolphin-mistral-24b-venice-edition:free'],
-  'auto-unchat':['cognitivecomputations/dolphin-mistral-24b-venice-edition:free','venice-uncensored']
+  'auto-unchat':['cognitivecomputations/dolphin-mistral-24b-venice-edition:free','venice/uncensored:free','venice-uncensored']
 };
 const AUTO_LABEL = { 'auto-code':'⚡ Auto — Coding', 'auto-uncode':'🔓 Auto — Unrestricted Coding', 'auto-unchat':'💬 Auto — Uncensored Chat' };
 const SECTION_INFO = {
@@ -800,12 +810,22 @@ async function testProvider(prov){
     showInfo('\u26a0\ufe0f '+PROVIDERS[prov].name+' error '+res.status,'Exact message from the server:<br><br><b>'+esc(String(msg)).slice(0,320)+'</b>'+hint);
   }catch(e){ showInfo('Connection failed', e.message==='Failed to fetch'?'No internet, or this device cannot reach that endpoint (common with a Custom/Local URL on a different network).':esc(e.message)); }
 }
-function setEnabled(which,on){ enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus(); showToast((PROVIDERS[which==='or'?'openrouter':which]||{name:which}).name+(on?' enabled':' disabled'),true); }
+function setEnabled(which,on){
+  enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus();
+  var name=(PROVIDERS[which==='or'?'openrouter':which]||{name:which}).name;
+  var hasKey = which==='custom'?!!customUrl:!!keys[which];
+  if(on){
+    if(hasKey) showToast('\u2705 '+name+' is ON — the app can use it now',true);
+    else showInfo(name+' is ON \u2014 but no key yet','You switched '+name+' ON, but there is no key saved, so it still can\'t be used.<br><br>Tap <b>Set / Change Key</b>, paste your '+name+' key, then tap <b>🔍 Test Connection</b> to confirm it works.');
+  } else {
+    showInfo('\u23f8\ufe0f '+name+' is OFF','The app will now <b>skip '+name+'</b> completely — no requests sent to it. Its models show <b>OFF</b> in the menu. Your key is kept safe; flip the switch back ON anytime to use it again.');
+  }
+}
 function refreshEnabledUI(){ ['or','chutes','venice','custom'].forEach(function(k){ var el=document.getElementById('en-'+k); if(el) el.checked=enabled[k]!==false; }); }
 function setKey(which){
   var map={or:{l:'OpenRouter (sk-or-...)',s:PROVIDERS.openrouter.store},chutes:{l:'Chutes (cpk_...)',s:PROVIDERS.chutes.store},venice:{l:'Venice.ai',s:PROVIDERS.venice.store}};
   var m=map[which]; var v=prompt('Paste your '+m.l+' key:');
-  if(v && v.trim()){ keys[which]=v.trim(); localStorage.setItem(m.s, v.trim()); refreshKeyStatus(); showToast('Key saved',true); }
+  if(v && v.trim()){ keys[which]=v.trim(); localStorage.setItem(m.s, v.trim()); enabled[which]=true; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshEnabledUI(); refreshKeyStatus(); showInfo('\u2705 '+m.l.split(' (')[0]+' key saved','Saved as <b>'+maskKey(v.trim())+'</b> and switched ON.<br><br>Now tap <b>🔍 Test Connection</b> to make sure it actually works before you rely on it.'); }
 }
 function setCustom(part){
   if(part==='url'){ var u=prompt('Paste your endpoint Base URL.\n\nExamples:\n• Local PC Ollama: http://192.168.1.x:11434/v1/chat/completions\n• Kaggle/ngrok: https://xxxx.ngrok.io/v1/chat/completions\n• Featherless: https://api.featherless.ai/v1/chat/completions', customUrl||''); if(u!==null){ customUrl=u.trim(); localStorage.setItem('anonCustomUrl',customUrl); refreshKeyStatus(); showToast('Endpoint saved',true); } }
