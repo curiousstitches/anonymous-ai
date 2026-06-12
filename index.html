@@ -336,6 +336,7 @@ textarea.ta:focus { border-color:var(--accent); }
     </div>
     <div class="bar-actions">
       <button class="pill accent" onclick="openBuilder()" title="Builder">🔨</button>
+      <button class="pill" onclick="openGroup()" title="Group chat">👥</button>
       <button class="pill" onclick="toggleDrop()" title="Model">⚡</button>
       <button class="pill" onclick="openSettings()" title="Settings">⚙️</button>
     </div>
@@ -373,6 +374,39 @@ textarea.ta:focus { border-color:var(--accent); }
     <button class="big-btn" onclick="newChat()">+ New Chat</button>
     <input type="text" class="search-box" id="search-box" placeholder="🔍 Search chats..." oninput="renderHist()" spellcheck="false">
     <div id="hist-list"></div>
+  </div>
+</div>
+
+<!-- GROUP CHAT -->
+<div class="sheet" id="group">
+  <div class="p-head"><div class="p-title">Group Chat</div><button class="p-close" onclick="closeAll()">✕</button></div>
+  <div class="p-body">
+    <div class="sec">
+      <div class="sec-t">👥 Group Chat</div>
+      <div class="sec-d">Add a second AI so you and TWO bots can talk or code together. Every message you send, both bots reply — and they can read and answer each other.</div>
+      <div class="row">
+        <div class="row-lbl"><span class="l">Enable Group Chat</span><i class="info-i" onclick="showInfo('Group Chat','When ON, every message gets answered by BOTH bots, and they can see and respond to each other. Turn OFF to go back to a single AI. Tip: give them different AIs (e.g. one Uncensored Chat, one Coding) for a real team.')">i</i>
+          <label class="toggle"><input type="checkbox" id="group-on" onchange="setGroupOn(this.checked)"><span class="tr"></span></label></div>
+      </div>
+      <div class="row">
+        <div class="row-lbl"><span class="l">🤖 Bot A</span><i class="info-i" onclick="showInfo('Bot A','Give your first bot a name and pick which AI powers it. Example: name it Nova and use Uncensored Chat for a flirty companion.')">i</i></div>
+        <input class="search-box" id="botA-name" style="margin-bottom:8px" oninput="saveGroup();updateHdr()" placeholder="Bot A name">
+        <select class="search-box" id="botA-model" style="margin:0" onchange="saveGroup()"></select>
+      </div>
+      <div class="row">
+        <div class="row-lbl"><span class="l">🤖 Bot B</span><i class="info-i" onclick="showInfo('Bot B','Your second bot. Give it a different AI than Bot A for variety — e.g. a Coding model so one chats and one codes.')">i</i></div>
+        <input class="search-box" id="botB-name" style="margin-bottom:8px" oninput="saveGroup();updateHdr()" placeholder="Bot B name">
+        <select class="search-box" id="botB-model" style="margin:0" onchange="saveGroup()"></select>
+      </div>
+      <div class="row">
+        <div class="row-lbl"><span class="l">Bots chat to each other</span><i class="info-i" onclick="showInfo('Back-and-forth rounds','After both bots answer you, how many MORE times they reply to each other before stopping. 0 = each answers once. 1-3 = they have a little conversation between themselves.')">i</i></div>
+        <div class="sl-row"><input type="range" id="group-rounds" min="0" max="3" step="1" value="0" oninput="setGroupRounds(this.value)"><span class="sl-v" id="group-rounds-v">0</span></div>
+      </div>
+      <div class="row">
+        <div class="row-lbl"><span class="l">Make the bots talk now</span><i class="info-i" onclick="showInfo('Let the bots talk','Triggers one round where both bots reply to whatever has been said so far — even without you typing. Great for watching them brainstorm or pair-program together.')">i</i></div>
+        <button class="mini-btn" onclick="botsTalk()">▶️ Let the bots talk (one round)</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -573,7 +607,7 @@ textarea.ta:focus { border-color:var(--accent); }
 <div id="toast"></div>
 
 <script>
-const APP_VERSION='5.0';
+const APP_VERSION='5.1';
 
 // ── PROVIDERS ──
 const PROVIDERS = {
@@ -701,18 +735,20 @@ let fxMaster=false, activeFx=[], animBg='none', interactive=false, customAccent=
 let fxAnimId=null, fxParticles=[], touchPos=null;
 let pendingFiles=[]; let builderStack='Auto';
 let gh={token:'',repo:''}; let speaking=false;
+let groupOn=false, botA={model:'auto-unchat',name:'Nova'}, botB={model:'auto-code',name:'Rex'}, groupRounds=0;
 let recognizing=false, recog=null;
 let abortCtl=null;  // lets us STOP the AI mid-answer
 let deferredInstall=null;  // for the 'Install app' button
 
 // ── BOOT ──
 window.onload=function(){
-  buildSetupPick(); buildModelDrop(); buildThemeGrid(); buildFontSel(); buildPersonas(); buildBuilder();
+  buildSetupPick(); buildModelDrop(); buildThemeGrid(); buildFontSel(); buildPersonas(); buildBuilder(); buildGroupUI();
   keys.or = localStorage.getItem(PROVIDERS.openrouter.store) || '';
   keys.chutes = localStorage.getItem(PROVIDERS.chutes.store) || '';
   gh.token = localStorage.getItem('anonGhToken')||''; gh.repo = localStorage.getItem('anonGhRepo')||'';
   keys.venice = localStorage.getItem(PROVIDERS.venice.store)||''; keys.custom = localStorage.getItem(PROVIDERS.custom.store)||'';
   customUrl = localStorage.getItem('anonCustomUrl')||''; customModel = localStorage.getItem('anonCustomModel')||'';
+  try{ var g=JSON.parse(localStorage.getItem('anonGroup')||'null'); if(g){ groupOn=!!g.on; botA=g.a||botA; botB=g.b||botB; groupRounds=g.rounds||0; } }catch(e){}
   try{ var en=JSON.parse(localStorage.getItem('anonEnabled')||'{}'); ['or','chutes','venice','custom'].forEach(function(k){ if(en[k]===false) enabled[k]=false; }); }catch(e){}
   currentModel = localStorage.getItem('anonModel') || 'auto-code';
   if(currentModel==='auto-unc') currentModel='auto-unchat'; if(currentModel==='auto-chat') currentModel='auto-code';
@@ -870,9 +906,10 @@ function toggleDrop(){ var d=document.getElementById('model-drop'); d.style.disp
 function pickModel(id){ currentModel=id; localStorage.setItem('anonModel',id); buildModelDrop(); updateHdr(); toggleDrop(); }
 function updateHdr(){
   var label;
-  if(AUTO_LABEL[currentModel]) label=AUTO_LABEL[currentModel];
+  if(groupOn){ label='\ud83d\udc65 '+botA.name+' + '+botB.name; }
+  else if(AUTO_LABEL[currentModel]) label=AUTO_LABEL[currentModel];
   else { var m=MODELS.find(function(x){return x.id===currentModel;})||MODEL_INDEX[currentModel]; label=m?m.name:currentModel; }
-  document.getElementById('hdr-model').textContent=label;
+  var hm=document.getElementById('hdr-model'); if(hm) hm.textContent=label;
 }
 document.addEventListener('click',function(e){ if(!e.target.closest('.topbar')) document.getElementById('model-drop').style.display='none'; });
 
@@ -881,7 +918,7 @@ function openDrawer(){ renderHist(); document.getElementById('drawer').classList
 function openSettings(){ updateUsage(); document.getElementById('settings').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
 function openBuilder(){ document.getElementById('builder').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
 function closeBuilder(){ document.getElementById('builder').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
-function closeAll(){ document.getElementById('drawer').classList.remove('show'); document.getElementById('settings').classList.remove('show'); document.getElementById('builder').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+function closeAll(){ document.getElementById('drawer').classList.remove('show'); document.getElementById('settings').classList.remove('show'); document.getElementById('builder').classList.remove('show'); var g=document.getElementById('group'); if(g) g.classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
 
 // ── THEMES / FONTS ──
 function buildThemeGrid(){ document.getElementById('theme-grid').innerHTML=THEMES.map(function(t){ return '<div class="swatch" data-tid="'+t.id+'" onclick="applyTheme(\''+t.id+'\')"><div class="sw-dot" style="background:'+t.color+'"></div><div class="sw-n">'+t.name+'</div></div>'; }).join(''); }
@@ -1115,7 +1152,7 @@ function sendOrStop(){ if(generating){ stopGen(); } else { send(); } }
 function stopGen(){ if(abortCtl){ try{ abortCtl.abort(); }catch(e){} } }
 
 async function send(){
-  if(generating) return;
+  if(generating){ showToast('Hold on — finishing the current reply first'); return; }
   var input=document.getElementById('msg-input');
   var text=input.value.trim();
   if(!text && pendingFiles.length===0) return;
@@ -1124,6 +1161,7 @@ async function send(){
   input.value=''; input.style.height='auto'; localStorage.removeItem('anonDraft');
   var displayText=text||'(sent files)';
   var attachNote=pendingFiles.length>0?pendingFiles.map(function(f){return (f.isImg?'🖼️':'📄')+f.name;}).join('  '):'';
+  if(groupOn){ localStorage.removeItem('anonDraft'); await groupSend(text); return; }
   addMsg('user', displayText+(attachNote?'\n'+attachNote:''));
   var content=buildMessageContent(text);
   history.push({role:'user',content:content,_display:displayText});
@@ -1149,15 +1187,9 @@ async function runCompletion(){
   else effSys='';
   var msgs = effSys ? [{role:'system',content:effSys}].concat(stripDisplay(history)) : stripDisplay(history);
   var chain, singleFallback=false;
+  // Auto modes use a fallback chain. A SPECIFIC pick uses ONLY that model — no fallback, ever.
   if(AUTO_CHAINS[currentModel]) chain=AUTO_CHAINS[currentModel].slice();
-  else if(currentModel==='openrouter/free') chain=['openrouter/free'];
-  else if(selMod && selMod.tags && selMod.tags.indexOf('unc')>=0){
-    // uncensored pick: only back up with ANOTHER uncensored model, never a restricted one
-    chain=[currentModel,'cognitivecomputations/dolphin-mistral-24b-venice-edition:free'];
-    if(chain[0]===chain[1]) chain=[currentModel];
-    singleFallback=true;
-  }
-  else { chain=[currentModel,'openrouter/free']; singleFallback=true; }
+  else chain=[currentModel];
   var answered=false, lastErr='', dataPolicyHit=false, uncWanted=(currentModel==='auto-unchat'||currentModel==='auto-uncode'||(selMod&&selMod.tags&&selMod.tags.indexOf('unc')>=0));
   for(var ci=0; ci<chain.length && !answered; ci++){
     var modelId=chain[ci];
@@ -1237,6 +1269,7 @@ async function runCompletion(){
   scrollBot();
 }
 function stripDisplay(h){ return h.map(function(m){ return {role:m.role,content:m.content}; }); }
+function setSendStop(on){ var sb=document.getElementById('send-btn'); if(!sb) return; if(on){ sb.textContent='\u25a0'; sb.title='Stop'; sb.disabled=false; } else { sb.textContent='\u2191'; sb.title='Send'; sb.disabled=false; } }
 
 // ── BUILDER ──
 function buildBuilder(){
@@ -1262,6 +1295,102 @@ function launchBuild(prompt,label){
   history.push({role:'user',content:bp,_display:'🔨 Build: '+label});
   sessionMsgs++; runCompletion();
 }
+
+// ── GROUP CHAT ENGINE ──
+function resolveProvider(modelId){
+  var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
+  var keyMap={openrouter:keys.or,chutes:keys.chutes,venice:keys.venice,custom:keys.custom};
+  var key=keyMap[prov]||'';
+  var endpoint=prov==='custom'?customUrl:PROVIDERS[prov].url;
+  var sendModel=(modelId==='__custom__'||modelId==='__custom_code__')?customModel:modelId;
+  return {prov:prov,key:key,endpoint:endpoint,sendModel:sendModel};
+}
+function resolveGroupModel(m){ return AUTO_CHAINS[m]? AUTO_CHAINS[m][0] : m; }
+function botPersona(bot){
+  var rm=resolveGroupModel(bot.model);
+  var mm=MODELS.find(function(x){return x.id===rm;});
+  if(bot.model==='auto-unchat'||(mm&&mm.cat==='UnChat')) return CHAT_PROMPT;
+  if(bot.model==='auto-uncode'||(mm&&mm.cat==='UnCoding')) return CODE_PROMPT+UNCODE_EXTRA;
+  if(bot.model==='auto-code'||(mm&&mm.cat==='Coding')) return CODE_PROMPT;
+  return '';
+}
+async function oneShot(modelId, messages, maxTok){
+  var r=resolveProvider(modelId);
+  if(r.prov==='custom'){ if(!customUrl||!customModel) throw new Error('Custom endpoint not set in Settings'); }
+  else if(!r.key) throw new Error('No '+PROVIDERS[r.prov].name+' key');
+  if(enabled[{openrouter:'or',chutes:'chutes',venice:'venice',custom:'custom'}[r.prov]]===false) throw new Error(PROVIDERS[r.prov].name+' is turned OFF');
+  var hdrs={'Content-Type':'application/json'}; if(r.key) hdrs['Authorization']='Bearer '+r.key;
+  var res=await fetch(r.endpoint,{method:'POST',headers:hdrs,body:JSON.stringify({model:r.sendModel,messages:messages,temperature:temperature,max_tokens:maxTok||1200})});
+  if(!res.ok){ var er=await res.json().catch(function(){return {};}); throw new Error((er&&er.error&&er.error.message)||('Error '+res.status)); }
+  var j=await res.json(); return (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
+}
+function groupTranscript(){
+  return history.map(function(m){
+    var who=m._who||(m.role==='user'?'User':'AI');
+    var c=typeof m.content==='string'?m.content:(m._display||'');
+    return who+': '+c;
+  }).join('\n\n');
+}
+async function runBots(bots){
+  for(var i=0;i<bots.length;i++){
+    var bot=bots[i];
+    var typId='typ-'+Date.now()+'-'+i; addTyping(typId); scrollBot();
+    try{
+      var sys='You are "'+bot.name+'", taking part in a group chat with the User and another AI. Reply ONLY as '+bot.name+', in the first person, naturally and fairly briefly. Never write the other participants\' lines or labels. '+botPersona(bot);
+      var msgs=[{role:'system',content:sys},{role:'user',content:groupTranscript()+'\n\n'+bot.name+':'}];
+      var txt=await oneShot(resolveGroupModel(bot.model), msgs, 1200);
+      var tn=document.getElementById(typId); if(tn) tn.remove();
+      if(txt.trim()){ var id='ai-'+Date.now()+'-'+i; addMsg('ai',txt,id,bot.name); history.push({role:'assistant',content:txt,_who:bot.name,_model:bot.name}); addMsgActions(id,txt); persist(); }
+    }catch(err){ var t=document.getElementById(typId); if(t) t.remove(); showToast(bot.name+': '+err.message); }
+  }
+}
+async function groupSend(userText){
+  var e=document.getElementById('empty'); if(e) e.remove();
+  addMsg('user',userText); history.push({role:'user',content:userText,_who:'User'});
+  sessionMsgs++;
+  generating=true; setSendStop(true);
+  try{
+    await runBots([botA,botB]);
+    for(var r=0;r<groupRounds;r++){ await runBots([botA,botB]); }
+  }catch(err){ showToast(err.message); }
+  generating=false; setSendStop(false); scrollBot();
+}
+async function botsTalk(){
+  if(generating){ showToast('Hold on — finishing the current reply first'); return; }
+  if(history.length===0){ showToast('Say something to the bots first'); return; }
+  closeAll(); generating=true; setSendStop(true);
+  try{ await runBots([botA,botB]); }catch(err){ showToast(err.message); }
+  generating=false; setSendStop(false); scrollBot();
+}
+function groupModelOptions(sel){
+  var autos=[['auto-unchat','Auto — Uncensored Chat'],['auto-code','Auto — Coding'],['auto-uncode','Auto — Unrestricted Coding']];
+  var o=autos.map(function(a){ return '<option value="'+a[0]+'"'+(a[0]===sel?' selected':'')+'>'+a[1]+'</option>'; }).join('');
+  MODELS.forEach(function(m){ o+='<option value="'+m.id+'"'+(m.id===sel?' selected':'')+'>'+m.name+'</option>'; });
+  return o;
+}
+function buildGroupUI(){
+  var an=document.getElementById('botA-name'), am=document.getElementById('botA-model');
+  var bn=document.getElementById('botB-name'), bm=document.getElementById('botB-model');
+  var go=document.getElementById('group-on'), gr=document.getElementById('group-rounds'), grv=document.getElementById('group-rounds-v');
+  if(an){ an.value=botA.name; } if(bn){ bn.value=botB.name; }
+  if(am){ am.innerHTML=groupModelOptions(botA.model); } if(bm){ bm.innerHTML=groupModelOptions(botB.model); }
+  if(go){ go.checked=groupOn; } if(gr){ gr.value=groupRounds; } if(grv){ grv.textContent=groupRounds; }
+  updateHdr();
+}
+function saveGroup(){
+  var an=document.getElementById('botA-name'), am=document.getElementById('botA-model');
+  var bn=document.getElementById('botB-name'), bm=document.getElementById('botB-model');
+  if(an) botA.name=an.value||'Bot A'; if(am) botA.model=am.value;
+  if(bn) botB.name=bn.value||'Bot B'; if(bm) botB.model=bm.value;
+  localStorage.setItem('anonGroup',JSON.stringify({on:groupOn,a:botA,b:botB,rounds:groupRounds}));
+}
+function setGroupOn(on){
+  groupOn=on; saveGroup(); updateHdr();
+  if(on) showInfo('\ud83d\udc65 Group Chat ON','Now <b>'+esc(botA.name)+'</b> and <b>'+esc(botB.name)+'</b> both reply to every message — and they can see and respond to each other. Set their names and AIs here. Turn OFF anytime to go back to a single AI.');
+  else showToast('Group Chat OFF — back to a single AI',true);
+}
+function setGroupRounds(v){ groupRounds=parseInt(v); document.getElementById('group-rounds-v').textContent=v; saveGroup(); }
+function openGroup(){ buildGroupUI(); document.getElementById('group').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
 
 // ── DOM ──
 function addMsg(role,text,id,modelName){
