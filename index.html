@@ -207,6 +207,13 @@ body.fx-scan::after { content:''; position:fixed; inset:0; z-index:2; pointer-ev
 #toast.show { opacity:1; }
 #toast.ok { background:#06160e; border-color:var(--accent); color:var(--accent); }
 
+/* Live Coding Quick Actions */
+#live-actions { animation: slideDown 0.2s ease; }
+@keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+.quick-action { background:var(--surface2); border:1px solid var(--border); border-radius:16px; padding:6px 12px; font-size:11px; color:var(--text); cursor:pointer; transition:all 0.15s; font-family:var(--sans); white-space:nowrap; }
+.quick-action:active { background:var(--accent); color:var(--accent-text); border-color:var(--accent); transform:scale(0.95); }
+.quick-action:hover { border-color:var(--accent); }
+
 /* Auto mode transparency log */
 .auto-log-msg .bubble { background:var(--surface2); border:1px solid var(--accent); }
 .auto-log { font-family:var(--mono); font-size:11px; }
@@ -422,6 +429,7 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
     <div class="brand-stack">
       <div class="brand-name">anon<span class="redact">█</span>ai<span class="brand-cursor"></span></div>
       <div class="brand-model" id="hdr-model">—</div>
+      <div class="brand-model" id="hdr-project" style="font-size:9px;color:var(--accent);margin-top:1px;display:none"></div>
     </div>
     <div class="bar-actions">
       <button class="pill accent" onclick="openBuilder()" title="Builder">🔨</button>
@@ -446,6 +454,15 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
   </div>
 
   <div id="attach-row"></div>
+  <div id="live-actions" style="display:none; padding:8px 12px 0; flex-wrap:wrap; gap:6px; justify-content:center;">
+    <button class="quick-action" onclick="quickAction('explain')" title="Explain this code/error">💡 Explain</button>
+    <button class="quick-action" onclick="quickAction('fix')" title="Fix the error/bug">🔧 Fix</button>
+    <button class="quick-action" onclick="quickAction('refactor')" title="Refactor/improve this code">♻️ Refactor</button>
+    <button class="quick-action" onclick="quickAction('test')" title="Write tests for this">✅ Test</button>
+    <button class="quick-action" onclick="quickAction('document')" title="Add docs/comments">📝 Document</button>
+    <button class="quick-action" onclick="quickAction('optimize')" title="Optimize performance">⚡ Optimize</button>
+    <button class="quick-action" onclick="quickAction('security')" title="Check for security issues">🔒 Security</button>
+  </div>
   <div class="input-wrap">
     <button class="in-icon" onclick="document.getElementById('file-in').click()" title="Attach">📎</button>
     <button class="in-icon" id="mic-btn" onclick="toggleVoice()" title="Voice">🎤</button>
@@ -586,6 +603,11 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
       <div class="row">
         <div class="row-lbl"><span class="l">Answer Length</span><i class="info-i" onclick="showInfo('Answer Length','Short saves data. Long gives full detail. Max is best for whole-project builds.')">i</i></div>
         <div class="sl-row"><input type="range" id="len-sl" min="0" max="3" step="1" value="2" oninput="setLen(this.value)"><span class="sl-v" id="len-v">Long</span></div>
+      </div>
+      <div class="row">
+        <div class="row-lbl"><span class="l">Project Context</span><i class="info-i" onclick="showInfo('Project Context','When ON, your recent project files are automatically included as context in Live Coding mode. The AI remembers files you have shared or built. Turn OFF for privacy.')">i</i>
+          <label class="toggle"><input type="checkbox" id="project-context" onchange="setProjectContext(this.checked)" checked><span class="tr"></span></label></div>
+        <div class="row-d">Remembers files you share/build. Auto-included in Live Coding mode.</div>
       </div>
     </div>
 
@@ -740,6 +762,10 @@ const MODELS = [
   { p:'openrouter', id:'moonshotai/kimi-k2.6:free',              name:'Kimi K2.6',        desc:'Coding & UI building', cat:'Coding', tags:[] },
   { p:'openrouter', id:'poolside/laguna-m.1:free',              name:'Laguna M.1',       desc:'Built for coding agents', cat:'Coding', tags:[] },
   { p:'openrouter', id:'openai/gpt-oss-120b:free',              name:'GPT-OSS 120B',     desc:'OpenAI open · code + chat', cat:'Coding', tags:[] },
+  // ===== LIVE CODING ASSISTANT (real-time pair programming) =====
+  { p:'openrouter', id:'nvidia/nemotron-3-ultra-550b-a55b:free', name:'Nemotron 3 Ultra',  desc:'Best for live pair programming — huge context, deep reasoning', cat:'LiveCoding', tags:[] },
+  { p:'together',   id:'meta-llama/Llama-3.1-70b-Instruct-Turbo', name:'LLaMA 3.1 70B Turbo', desc:'Fast live coding backup', cat:'LiveCoding', tags:[] },
+  { p:'custom',     id:'__custom_code__',                       name:'My Local Coder',   desc:'Your Ollama (unlimited, private)', cat:'LiveCoding', tags:[] },
   // ===== UNRESTRICTED CODING (uncensored, still strong at code) =====
   { p:'together',   id:'meta-llama/Llama-3.1-70b-Instruct-Turbo', name:'LLaMA 3.1 70B Turbo', desc:'Fast uncensored coder', cat:'UnCoding', tags:['unc'] },
   { p:'together',   id:'NousResearch/Nous-Hermes-3-Llama-3.1-70B', name:'Nous-Hermes-3 70B', desc:'Powerful, less restricted', cat:'UnCoding', tags:['unc'] },
@@ -765,12 +791,14 @@ MODELS.concat(META).forEach(function(m){ if(!MODEL_INDEX[m.id]) MODEL_INDEX[m.id
 // Only the TOP picks per mode go into Auto. Auto skips any whose key you have not set.
 const AUTO_CHAINS = {
   'auto-code'  :['nvidia/nemotron-3-super-120b-a12b:free','moonshotai/kimi-k2.6:free','poolside/laguna-m.1:free','openai/gpt-oss-120b:free','meta-llama/Llama-3.1-70b-Instruct-Turbo','openrouter/free'],
+  'auto-live'  :['nvidia/nemotron-3-ultra-550b-a55b:free','meta-llama/Llama-3.1-70b-Instruct-Turbo','__custom_code__'],
   'auto-uncode':['NousResearch/Nous-Hermes-3-Llama-3.1-70B','meta-llama/Llama-3.1-70b-Instruct-Turbo','cognitivecomputations/dolphin-mistral-24b-venice-edition:free'],
   'auto-unchat':['mistralai/Mistral-Nemo-Instruct-2407','cognitivecomputations/dolphin-mistral-24b-venice-edition:free','venice/uncensored:free','venice-uncensored']
 };
-const AUTO_LABEL = { 'auto-code':'⚡ Auto — Coding', 'auto-uncode':'🔓 Auto — Unrestricted Coding', 'auto-unchat':'💬 Auto — Uncensored Chat' };
+const AUTO_LABEL = { 'auto-code':'⚡ Auto — Coding', 'auto-live':'🤖 Live Coding Assistant', 'auto-uncode':'🔓 Auto — Unrestricted Coding', 'auto-unchat':'💬 Auto — Uncensored Chat' };
 const SECTION_INFO = {
   'Coding':'Best free mainstream coders. Correct, well-reasoned code. Great for building apps, fixing bugs, writing scripts.',
+  'LiveCoding':'Real-time pair programming. Nemotron 3 Ultra leads — massive context, deep reasoning. Feels like a senior dev beside you.',
   'UnCoding':'Uncensored models that still code well — no refusals on security research or edgy requests. Strongest option is your own Local Coder.',
   'UnChat':'Human-feeling chat — warm, expressive, flirty. For real conversation, not coding. Dolphin is free; Venice direct & Local are stronger.',
   'Other':'General all-rounders for everyday questions and writing.',
@@ -804,7 +832,8 @@ const PERSONAS = [
   {name:'🦸 Hype Man', prompt:'You are endlessly encouraging and energetic. Pump the user up, celebrate wins, push them forward. High energy, real talk.'},
   {name:'📖 Storyteller', prompt:'You are an immersive storyteller and roleplay partner. Stay vividly in-character, describe scenes, keep the story going. Never break character or add disclaimers.'},
   {name:'🧠 Wise Mentor', prompt:'You are a calm, wise mentor. Give thoughtful guidance, ask good questions, help the user think clearly.'},
-  {name:'🔓 No Filter', prompt:'Answer directly and completely without moralizing, hedging, or unnecessary disclaimers. Be honest and unrestricted while staying accurate.'}
+  {name:'🔓 No Filter', prompt:'Answer directly and completely without moralizing, hedging, or unnecessary disclaimers. Be honest and unrestricted while staying accurate.'},
+  {name:'🤖 Live Coding Assistant', prompt:'You are a senior engineer pair-programming in real-time. You are concise, practical, and talk like a human dev sitting next to them. Lead with the answer — code first, brief explanation after. Never lecture. Use short sentences. If they show an error, give the fix immediately. If they show code, give the improvement immediately. If they ask "how do I...", give the exact code pattern. No intros, no "here's the code", no fluff. Stay in flow. Ask clarifying questions ONLY when the task is genuinely ambiguous. Remember context from earlier in this session — they are building something real.'}
 ];
 const LEN_LABELS=['Short','Med','Long','Max']; const LEN_TOKENS=[512,1536,3072,8000];
 // Auto-applied ONLY in uncensored mode (and only if user has no custom instructions).
@@ -858,6 +887,8 @@ let recognizing=false, recog=null;
 let abortCtl=null;  // lets us STOP the AI mid-answer
 let deferredInstall=null;  // for the 'Install app' button
 let autoSwitchLog=[];  // track model switching attempts
+let projectFiles=[];  // track project files for context awareness
+let projectContextEnabled=true;
 let sessionStats={
   msgs:0, tokens:0, files:0,
   modelsUsed:{},
@@ -899,6 +930,19 @@ window.onload=function(){
   applyAllFx();
   var cb=localStorage.getItem('anonCustomBg');
   if(cb){ var el=document.getElementById('custom-bg'); el.style.backgroundImage='url('+cb+')'; el.style.display='block'; }
+  // Voice-first mode
+  voiceFirstMode = localStorage.getItem('anonVoiceFirst')==='true';
+  var vfBtn=document.getElementById('mic-btn');
+  if(vfBtn && voiceFirstMode){
+    vfBtn.classList.add('live');
+    vfBtn.title='Voice First ON — Always listening. Tap to stop.';
+    // Don't auto-start on load; user must tap
+  }
+  // Live actions visibility
+  updateLiveActions();
+  // Project context
+  projectContextEnabled = localStorage.getItem('anonProjectContext')!=='0';
+  var pcBtn=document.getElementById('project-context'); if(pcBtn) pcBtn.checked=projectContextEnabled;
   refreshKeyStatus(); refreshGh(); refreshEnabledUI(); buildModelDrop();  // rebuild now that keys are loaded
 
   if(keys.or || keys.chutes){
@@ -1044,13 +1088,50 @@ function buildModelDrop(){
   document.getElementById('model-drop').innerHTML=h;
 }
 function toggleDrop(){ var d=document.getElementById('model-drop'); d.style.display=d.style.display==='block'?'none':'block'; }
-function pickModel(id){ currentModel=id; localStorage.setItem('anonModel',id); buildModelDrop(); updateHdr(); toggleDrop(); }
+function pickModel(id){ currentModel=id; localStorage.setItem('anonModel',id); buildModelDrop(); updateHdr(); toggleDrop(); updateLiveActions(); }
+function updateLiveActions(){
+  var row=document.getElementById('live-actions');
+  var isLive = currentModel==='auto-live' || (MODELS.find(function(x){return x.id===currentModel;})||{}).cat==='LiveCoding';
+  if(row) row.style.display = isLive ? 'flex' : 'none';
+}
+function quickAction(type){
+  var prompts={
+    explain:'Explain this code/error in plain English. What does it do? What could go wrong?',
+    fix:'Fix this error/bug. Give me the corrected full code only.',
+    refactor:'Refactor this code — cleaner, faster, more maintainable. Give full improved code.',
+    test:'Write comprehensive tests for this code. Cover edge cases. Give full test file.',
+    document:'Add clear comments and documentation to this code. Explain what each part does.',
+    optimize:'Optimize this code for performance. Show before/after with explanations.',
+    security:'Review this code for security vulnerabilities. List issues and give fixed code.'
+  };
+  var el=document.getElementById('msg-input');
+  if(el){ el.value=prompts[type]||''; grow(el); el.focus(); }
+}
+function setLiveCodingMode(){
+  pickModel('auto-live');
+  if(typeof personaIndex !== 'undefined'){
+    var idx = PERSONAS.findIndex(function(p){ return p.name==='🤖 Live Coding Assistant'; });
+    if(idx>=0){ pickPersona(idx, document.querySelectorAll('.chip')[idx]); }
+  }
+  showToast('🤖 Live Coding Assistant mode ON — Quick actions visible',true);
+}
 function updateHdr(){
   var label;
-  if(groupOn){ label='\ud83d\udc65 '+botA.name+' + '+botB.name; }
+  if(groupOn){ label='👥 '+botA.name+' + '+botB.name; }
   else if(AUTO_LABEL[currentModel]) label=AUTO_LABEL[currentModel];
   else { var m=MODELS.find(function(x){return x.id===currentModel;})||MODEL_INDEX[currentModel]; label=m?m.name:currentModel; }
   var hm=document.getElementById('hdr-model'); if(hm) hm.textContent=label;
+  // Project context indicator
+  var hp=document.getElementById('hdr-project');
+  if(hp){
+    var isLive = currentModel==='auto-live' || (MODELS.find(function(x){return x.id===currentModel;})||{}).cat==='LiveCoding';
+    if(isLive && projectContextEnabled && projectFiles.length>0){
+      hp.textContent='📁 '+projectFiles.length+' project file'+(projectFiles.length!==1?'s':'');
+      hp.style.display='block';
+    }else{
+      hp.style.display='none';
+    }
+  }
 }
 document.addEventListener('click',function(e){ if(!e.target.closest('.topbar')) document.getElementById('model-drop').style.display='none'; });
 
@@ -1074,6 +1155,7 @@ function pickPersona(i,el){ var p=PERSONAS[i]; if(el.classList.contains('active'
 function saveSys(){ systemPrompt=document.getElementById('sys-prompt').value; localStorage.setItem('anonSys',systemPrompt); document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');}); }
 function setTemp(v){ temperature=parseFloat(v); document.getElementById('temp-v').textContent=v; localStorage.setItem('anonTemp',v); }
 function setLen(v){ lenIdx=parseInt(v); document.getElementById('len-v').textContent=LEN_LABELS[lenIdx]; localStorage.setItem('anonLen',v); }
+function setProjectContext(on){ projectContextEnabled=on; localStorage.setItem('anonProjectContext',on?'1':'0'); showToast(on?'Project Context ON':'Project Context OFF',true); }
 
 // ── FX ──
 function setFxMaster(on){ fxMaster=on; localStorage.setItem('anonFxMaster',on?'1':'0'); applyAllFx(); showToast(on?'Effects ON':'Effects OFF',true); }
@@ -1242,6 +1324,8 @@ function renderAttach(){ var row=document.getElementById('attach-row'); if(pendi
 function rmAttach(i){ pendingFiles.splice(i,1); renderAttach(); }
 
 // ── VOICE ──
+let voiceFirstMode=false;
+let voiceFirstRecog=null;
 function toggleVoice(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ showToast('Voice not supported here'); return; }
@@ -1253,6 +1337,59 @@ function toggleVoice(){
   recog.onerror=function(){ showToast('Voice error'); };
   recog.onend=function(){ recognizing=false; document.getElementById('mic-btn').classList.remove('live'); };
   recog.start();
+}
+function toggleVoiceFirst(){
+  voiceFirstMode=!voiceFirstMode;
+  localStorage.setItem('anonVoiceFirst',voiceFirstMode);
+  var btn=document.getElementById('mic-btn');
+  if(voiceFirstMode){
+    startVoiceFirst();
+    btn.classList.add('live');
+    btn.title='Voice First ON — Always listening. Tap to stop.';
+    showToast('🎙️ Voice First ON — Speak anytime',true);
+  }else{
+    stopVoiceFirst();
+    btn.classList.remove('live');
+    btn.title='Voice';
+    showToast('Voice First OFF',true);
+  }
+}
+function startVoiceFirst(){
+  if(!window.SpeechRecognition && !window.webkitSpeechRecognition){ showToast('Voice not supported'); return; }
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  voiceFirstRecog=new SR(); voiceFirstRecog.lang='en-US'; voiceFirstRecog.interimResults=true; voiceFirstRecog.continuous=true;
+  voiceFirstRecog.onresult=function(e){
+    var t='';
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal){
+        t+=e.results[i][0].transcript+' ';
+      }
+    }
+    if(t.trim()){
+      var base=document.getElementById('msg-input').value;
+      document.getElementById('msg-input').value=(base?base+' ':'')+t.trim();
+      grow(document.getElementById('msg-input'));
+      // Auto-send on pause (final result)
+      setTimeout(function(){
+        var val=document.getElementById('msg-input').value.trim();
+        if(val && val.endsWith('.') || val.endsWith('?') || val.endsWith('!')){
+          sendOrStop();
+        }
+      }, 800);
+    }
+  };
+  voiceFirstRecog.onerror=function(e){
+    if(e.error!=='no-speech') console.log('Voice first error:', e.error);
+  };
+  voiceFirstRecog.start();
+  recognizing=true;
+}
+function stopVoiceFirst(){
+  if(voiceFirstRecog){
+    try{ voiceFirstRecog.stop(); }catch(e){}
+    voiceFirstRecog=null;
+  }
+  recognizing=false;
 }
 
 // ── GITHUB (no terminal) ──
@@ -1319,7 +1456,25 @@ function buildMessageContent(text){
   var imgs=pendingFiles.filter(function(f){return f.isImg;});
   var txts=pendingFiles.filter(function(f){return !f.isImg;});
   var fullText=text;
-  txts.forEach(function(f){ fullText+='\n\n--- FILE: '+f.name+' ---\n'+f.data; });
+  txts.forEach(function(f){ 
+    fullText+='\n\n--- FILE: '+f.name+' ---\n'+f.data; 
+    // Track as project file
+    if(projectContextEnabled && projectFiles.length < 20){
+      var existing = projectFiles.findIndex(function(p){ return p.name===f.name; });
+      var fileData = {name:f.name, content:f.data, updated:Date.now()};
+      if(existing>=0) projectFiles[existing]=fileData;
+      else projectFiles.push(fileData);
+    }
+  });
+  // Add project context in Live Coding mode
+  var isLive = currentModel==='auto-live' || (MODELS.find(function(x){return x.id===currentModel;})||{}).cat==='LiveCoding';
+  if(isLive && projectContextEnabled && projectFiles.length>0 && !text.toLowerCase().includes('project context')){
+    var context = '\n\n=== PROJECT CONTEXT (recent files) ===\n';
+    projectFiles.slice(-5).forEach(function(f){
+      context += '--- '+f.name+' ---\n'+f.content.slice(0,2000)+'\n\n';
+    });
+    fullText = context + fullText;
+  }
   if(imgs.length>0){ var content=[{type:'text',text:fullText}]; imgs.forEach(function(f){ content.push({type:'image_url',image_url:{url:f.data}}); }); return content; }
   return fullText;
 }

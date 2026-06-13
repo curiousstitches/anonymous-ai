@@ -1,133 +1,88 @@
 # CHANGELOG
 
-All notable changes to Anonymous AI are documented here.
-
 ## [Latest] - June 13, 2026
 
-### ✨ Major Improvements
+### 🤖 Live Coding Assistant (Major New Feature)
 
-#### 🔧 OpenRouter Integration
-- **FIXED:** Updated all OpenRouter UI paths from old `Settings → Privacy` to current `Workspace → Guardrails → Workspace Guardrail → Model & Provider Access`
-- **FIXED:** Improved guardrail error detection - now catches `guardrail`, `workspace`, and `model-not-allowed` keywords in addition to existing patterns
-- **IMPROVED:** Better error messages explaining the exact OpenRouter guardrail fix
+**The big one:** A real-time pair programming companion that feels like a senior dev sitting next to you.
 
-#### 🚀 New Provider: Together AI
-- **ADDED:** Together.ai as primary uncensored provider (faster, more reliable than alternatives)
-- **REPLACES:** Removed Chutes.ai (functionally replaced by Together AI)
-- **INCLUDES:** Nous-Hermes-3-70B and LLaMA 3.1 models for unrestricted coding & chat
-- **BENEFIT:** 31% faster inference, better free tier, comparable uncensored model quality
+#### What's New:
+- **🤖 Live Coding Assistant persona** — Senior engineer pair-programming in real-time. Concise, practical, talks like a human dev. Code first, brief explanation after. Never lectures.
+- **⚡ Nemotron 3 Ultra as default** — 550B params, massive context, deep reasoning. Best model for live pair programming.
+- **🔴 Auto-Live mode** (`auto-live`) — Nemotron 3 Ultra → LLaMA 3.1 70B Turbo → Local Ollama fallback chain
+- **⚡ Quick Action Buttons** (visible in Live Coding mode):
+  - 💡 **Explain** — "Explain this code/error in plain English"
+  - 🔧 **Fix** — "Fix this error/bug. Give corrected full code only"
+  - ♻️ **Refactor** — "Refactor — cleaner, faster, maintainable"
+  - ✅ **Test** — "Write comprehensive tests. Cover edge cases"
+  - 📝 **Document** — "Add clear comments and documentation"
+  - ⚡ **Optimize** — "Optimize for performance. Show before/after"
+  - 🔒 **Security** — "Review for vulnerabilities. List issues + fixed code"
 
-#### 🧠 Auto-Chain Reorganization  
-- **IMPROVED:** Auto mode now prioritizes best free models first, then falls back correctly
-- **FIXED:** Auto-code chain: Nemotron 3 Super → Kimi → Laguna → GPT-OSS → LLaMA Turbo
-- **FIXED:** Auto-uncode chain: Nous-Hermes-3 → LLaMA Turbo → Dolphin (free)
-- **FIXED:** Auto-unchat chain: Mistral Nemo → Dolphin → Venice → Venice Direct
-- **VERIFIED:** Loop logic ensures ONLY first working model answers (not all models)
+#### Voice-First Mode (New)
+- **🎙️ Voice First toggle** — Continuous listening, auto-sends on sentence end
+- Tap mic once → speaks anytime → auto-sends on pause
+- Perfect for hands-free coding while typing
 
-#### 📁 Project Structure
-- **REORGANIZED:** Moved documentation to `/docs` folder for cleaner root
-- **MOVED:** Deployment guides, technical docs, and research files to organized structure
-- **CREATED:** `/config` folder (reserved for future configuration files)
-- **KEPT:** Single `index.html` at root for easy access
+#### Project Context Awareness (New)
+- **📁 Project Context** — Automatically tracks files you share/build (up to 20)
+- **Auto-includes recent files** as context in Live Coding mode (last 5 files)
+- **Header indicator** — Shows "📁 3 project files" in top bar
+- **Settings toggle** — Privacy control: ON by default, can disable
+- **Smart inclusion** — Only adds context in Live Coding mode, not regular chat
 
-### 🔍 Detailed Changes
-
-#### API Provider Comparison (Research Completed)
-- Tested Groq, Together AI, Replicate, and others
-- **Decision:** Together AI + OpenRouter + Venice remains optimal
-- See `docs/API_RESEARCH_FINDINGS.md` for full analysis
-
-#### Error Handling Improvements
-```javascript
-// Now detects these new error patterns:
-- "guardrail" (new OpenRouter terminology)
-- "workspace" (account-level settings)
-- "model not allowed" (provider restrictions)
-- Additional fallback messages for better UX
-```
-
-#### Model Updates
-- **Added:** Nous-Hermes-3 (Together AI) - powerful unrestricted model
-- **Added:** LLaMA 3.1 70B Turbo (Together AI) - fast, mostly uncensored
-- **Added:** Mistral Nemo (Together AI) - lightweight uncensored chat
-- **Kept:** Venice.ai direct access (optional premium)
-- **Kept:** Ollama/Custom local support (unlimited, private)
+#### Visual Polish
+- **Live Actions bar** — Slides down smoothly when Live Coding mode active
+- **Project Context badge** in header — "📁 3 project files"
+- **Smooth animations** — Slide-down for actions, pulse for live indicators
+- **Provider badges** in model picker — Color-coded by provider
 
 ---
 
-## Previous Versions
+### Previous: Major Feature Release (Auto Transparency, Provider Stats, Visual Overhaul)
 
-### [v2] - June 12, 2026
-- Removed deprecated CodePilot archive (~74 files)
-- Updated error detection for initial guardrail keywords
-- Added initial troubleshooting guide
-
-### [v1] - Original Release
-- Core chat interface with free AI models
-- Builder mode for generating projects
-- GitHub integration
-- Multiple theme support
-- Voice I/O
+- Auto mode transparency log
+- Provider usage stats with progress bars
+- Guardrail status badge (green/red)
+- Landing page with animated gradient/orbs
+- Plain English docs (QUICKSTART, OWNER_LOG, README)
+- Project restructure (/docs, /config)
+- Together AI provider (replaced Chutes)
+- OpenRouter guardrails UI fix
+- Nemotron 3 Ultra in "Other" category
 
 ---
 
-## 📋 Current Providers
+### Before That: Cleanup & Foundation
 
-| Provider | Status | Models | Best For |
-|----------|--------|--------|---------|
-| **OpenRouter** | Active | 20+ free | Reliable, stable coding & chat |
-| **Together AI** | Active | 3-5 free | Fast, uncensored, redundancy |
-| **Venice.ai** | Optional | 1-2 free | Premium uncensored experience |
-| **Ollama (Local)** | Optional | Custom | Unlimited, private, unrestricted |
+- Removed CodePilot archive (74 files)
+- OpenRouter guardrails UI path fix
+- Error detection improvements
+- Documentation overhaul
 
 ---
 
-## 🎯 Known Issues & Solutions
+## Model Lineup (Current)
 
-### OpenRouter Free Models Not Working?
-✅ **Solution:** Follow the guardrail setup guide:
-1. Go to openrouter.ai
-2. Workspace → Guardrails → Workspace Guardrail → Model & Provider Access
-3. Enable BOTH toggles for free endpoints
-4. Test in app: Settings → Providers → Test Connection
-
-### Auto Mode Selecting Wrong Model?
-✅ **Solution:** Check model availability:
-1. Go to Settings → Providers
-2. Ensure provider is enabled (toggle ON)
-3. Confirm API key is set correctly
-4. Run Test Connection to verify
-
-### Model Returns No Response?
-✅ **Common causes:**
-- Free model daily cap hit (wait or add second provider key)
-- Incorrect guarding rules (see OpenRouter guardrails above)
-- Model name changed/deprecated (check in provider's model list)
+| Category | Models | Best For |
+|----------|--------|----------|
+| **LiveCoding** | Nemotron 3 Ultra (550B), LLaMA 3.1 70B Turbo, Local | Real-time pair programming |
+| **Coding** | Nemotron 3 Super, Kimi K2.6, Laguna M.1, GPT-OSS 120B | General coding tasks |
+| **UnCoding** | Nous-Hermes-3, LLaMA 3.1 Turbo, Local | Unrestricted coding |
+| **UnChat** | Mistral Nemo, Dolphin, Venice | Uncensored chat |
+| **Other** | Owl Alpha, GLM 4.5, Gemma 4 | General purpose |
 
 ---
 
-## 🔮 Roadmap
+## Auto Modes (Priority Order)
 
-- [ ] Add API usage tracking/stats
-- [ ] Improved model switching transparency (show which models are being tried)
-- [ ] Fine-tuning support for custom models
-- [ ] Integration with more free AI providers
-- [ ] Offline-first sync for better mobile experience
-- [ ] Advanced prompt engineering templates
-
----
-
-## 📝 Contributing
-
-Submit issues or improvements via GitHub. Currently maintaining compatibility with:
-- OpenRouter API v1
-- Together.ai OpenAI-compatible API
-- Venice.ai API
-- Ollama local API
-- Standard OpenAI-compatible endpoints
+| Mode | Chain | Best For |
+|------|-------|----------|
+| `auto-live` | Nemotron 3 Ultra → LLaMA 3.1 Turbo → Local | **Live pair programming** |
+| `auto-code` | Nemotron 3 Super → Kimi → Laguna → GPT-OSS → LLaMA → Auto | General coding |
+| `auto-uncode` | Nous-Hermes-3 → LLaMA Turbo → Dolphin | Unrestricted coding |
+| `auto-unchat` | Mistral Nemo → Dolphin → Venice → Venice Direct | Uncensored chat |
 
 ---
 
-**Last Updated:** June 13, 2026  
-**Current Version:** Latest (no version tags yet)  
-**Status:** Production-ready, actively maintained
+*Last Updated: June 13, 2026*
