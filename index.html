@@ -996,6 +996,11 @@ function refreshKeyStatus(){
 }
 async function testProvider(prov){
   var key = prov==='custom'?keys.custom:keys[prov];
+  // Fallback: read fresh from localStorage
+  if(!key && PROVIDERS[prov] && PROVIDERS[prov].store){
+    key = localStorage.getItem(PROVIDERS[prov].store) || '';
+    if(key) keys[prov] = key;
+  }
   var url = prov==='custom'?customUrl:PROVIDERS[prov].url;
   var testModel = {openrouter:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', together:'meta-llama/Llama-3.1-70b-Instruct-Turbo', venice:'venice-uncensored', custom:customModel}[prov];
   if(prov!=='custom' && !key){ showInfo('No key yet','Add a '+PROVIDERS[prov].name+' key first, then test.'); return; }
@@ -1535,18 +1540,23 @@ async function runCompletion(){
    }
    
    for(var ci=0; ci<chain.length && !answered; ci++){
-     var modelId=chain[ci];
-     var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
-     var enMap={openrouter:'or',together:'together',venice:'venice',custom:'custom'};
-     if(enabled[enMap[prov]]===false){ lastErr=PROVIDERS[prov].name+' is turned off'; updateAutoLog(autoLogId, ci, 'skipped', 'Provider disabled'); continue; }
-     var keyMap={openrouter:keys.or,together:keys.together,venice:keys.venice,custom:keys.custom};
-     var key=keyMap[prov]||'';
-     var endpoint = prov==='custom' ? customUrl : PROVIDERS[prov].url;
-     var sendModel = (modelId==='__custom__'||modelId==='__custom_code__') ? customModel : modelId;
-     var maxTok = LEN_TOKENS[lenIdx];
-     if(/R1|reason|think|deepseek/i.test(sendModel) && maxTok < 4000) maxTok = 4000;  // reasoning models need room or they return blank
-     if(prov==='custom'){ if(!customUrl){ lastErr='Set your Custom endpoint URL in Settings (Custom / Local)'; updateAutoLog(autoLogId, ci, 'skipped', 'No endpoint URL'); continue; } if(!customModel){ lastErr='Set your Custom model name in Settings'; updateAutoLog(autoLogId, ci, 'skipped', 'No model name'); continue; } }
-     else if(!key){ lastErr='No '+PROVIDERS[prov].name+' key set'; updateAutoLog(autoLogId, ci, 'skipped', 'No API key'); continue; }
+      var modelId=chain[ci];
+      var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
+      var enMap={openrouter:'or',together:'together',venice:'venice',custom:'custom'};
+      if(enabled[enMap[prov]]===false){ lastErr=PROVIDERS[prov].name+' is turned off'; updateAutoLog(autoLogId, ci, 'skipped', 'Provider disabled'); continue; }
+      var keyMap={openrouter:keys.or,together:keys.together,venice:keys.venice,custom:keys.custom};
+      var key=keyMap[prov]||'';
+      // Fallback: always read fresh from localStorage as safety net
+      if(!key && PROVIDERS[prov].store){
+        key = localStorage.getItem(PROVIDERS[prov].store) || '';
+        if(key) keyMap[prov] = key;  // cache it
+      }
+      var endpoint = prov==='custom' ? customUrl : PROVIDERS[prov].url;
+      var sendModel = (modelId==='__custom__'||modelId==='__custom_code__') ? customModel : modelId;
+      var maxTok = LEN_TOKENS[lenIdx];
+      if(/R1|reason|think|deepseek/i.test(sendModel) && maxTok < 4000) maxTok = 4000;  // reasoning models need room or they return blank
+      if(prov==='custom'){ if(!customUrl){ lastErr='Set your Custom endpoint URL in Settings (Custom / Local)'; updateAutoLog(autoLogId, ci, 'skipped', 'No endpoint URL'); continue; } if(!customModel){ lastErr='Set your Custom model name in Settings'; updateAutoLog(autoLogId, ci, 'skipped', 'No model name'); continue; } }
+      else if(!key){ lastErr='No '+PROVIDERS[prov].name+' key set'; updateAutoLog(autoLogId, ci, 'skipped', 'No API key'); continue; }
     updateAutoLog(autoLogId, ci, 'trying', 'Connecting...');
     try {
       var hdrs={'Content-Type':'application/json','HTTP-Referer':'https://anon-ai.local','X-Title':'Anonymous AI'};
@@ -1683,6 +1693,11 @@ function resolveProvider(modelId){
   var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
   var keyMap={openrouter:keys.or,together:keys.together,venice:keys.venice,custom:keys.custom};
   var key=keyMap[prov]||'';
+  // Fallback: read fresh from localStorage
+  if(!key && PROVIDERS[prov] && PROVIDERS[prov].store){
+    key = localStorage.getItem(PROVIDERS[prov].store) || '';
+    if(key) keyMap[prov] = key;
+  }
   var endpoint=prov==='custom'?customUrl:PROVIDERS[prov].url;
   var sendModel=(modelId==='__custom__'||modelId==='__custom_code__')?customModel:modelId;
   return {prov:prov,key:key,endpoint:endpoint,sendModel:sendModel};
