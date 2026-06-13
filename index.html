@@ -428,12 +428,13 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
       <div class="sec-t">⚡ Providers</div>
       <div class="row-d" style="margin:0 4px 10px">Each switch turns a provider <b>ON</b> or <b>OFF</b>. <b>ON</b> = the app can use it. <b>OFF</b> = ignored (your key is kept). <b>NO KEY</b> = paste a key first.</div>
       <div class="row">
-        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main free AI source.<br><br>1. Get a key: open <b>openrouter.ai/keys</b> → Create Key<br>2. Paste it here with Set/Change Key<br>3. IMPORTANT: to use free/uncensored models, open <b>openrouter.ai/settings/privacy</b> → Data Policies → enable free model training + publication → Save<br><br>Use 🔍 Test Connection to confirm it works.')">i</i><span class="key-status" id="ks-or">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
+        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main free AI source.<br><br>1. Get a key: open <b>openrouter.ai/keys</b> → Create Key<br>2. Paste it here with Set/Change Key<br>3. IMPORTANT: to use free/uncensored models, go to <b>openrouter.ai</b> → Workspace → Guardrails → Workspace Guardrail → Model & Provider Access → enable both training + publication toggles → Save<br><br>Use 🔍 Test Connection to confirm it works.')">i</i><span class="key-status" id="ks-or">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
         <div class="masked-key" id="mk-or">no key set</div><button class="mini-btn" onclick="setKey('or')">Set / Change Key</button><button class="mini-btn" onclick="testProvider('or')">🔍 Test Connection</button>
       </div>
       <div class="row">
-        <div class="row-lbl"><span class="l">Chutes</span><i class="info-i" onclick="showInfo('Chutes','Optional second free source (DeepSeek R1 and more).<br><br>1. Get a key at <b>chutes.ai</b><br>2. Paste it here<br>3. Tap 🔍 Test Connection<br><br>If one provider is down, Auto falls back to the other.')">i</i><span class="key-status" id="ks-chutes">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-chutes" onchange="setEnabled('chutes',this.checked)"><span class="tr"></span></label></div>
-        <div class="masked-key" id="mk-chutes">no key set</div><button class="mini-btn" onclick="setKey('chutes')">Set / Change Key</button><button class="mini-btn" onclick="testProvider('chutes')">🔍 Test Connection</button>
+        <div class="row-lbl"><span class="l">Together AI</span><i class="info-i" onclick="showInfo('Together AI','Fast, powerful alternative with strong uncensored models.<br><br>1. Sign up free at <b>together.ai</b><br>2. Create an API key<br>3. Paste it here<br>4. Tap 🔍 Test Connection<br><br>Excellent for unrestricted models. If OpenRouter is slow or down, this provides great redundancy.')">i</i><span class="key-status" id="ks-together">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-together" onchange="setEnabled('together',this.checked)"><span class="tr"></span></label></div>
+        <div class="row-d">Fast inference. Strong uncensored models like Nous-Hermes and LLaMA.</div>
+        <div class="masked-key" id="mk-together">no key set</div><button class="mini-btn" onclick="setKey('together')">Set / Change Key</button><button class="mini-btn" onclick="testProvider('together')">🔍 Test Connection</button>
       </div>
       <div class="row">
         <div class="row-lbl"><span class="l">Venice.ai (direct)</span><i class="info-i" onclick="showInfo('Venice.ai','Stronger uncensored source, privacy-first.<br><br>1. Sign up at <b>venice.ai</b> (free tier, no card)<br>2. Create an API key in their dashboard<br>3. Paste it here, tap 🔍 Test Connection<br>4. Pick \'Venice Uncensored\' from the model menu')">i</i><span class="key-status" id="ks-venice">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-venice" onchange="setEnabled('venice',this.checked)"><span class="tr"></span></label></div>
@@ -621,7 +622,7 @@ const APP_VERSION='5.2';
 // ── PROVIDERS ──
 const PROVIDERS = {
   openrouter: { name:'OpenRouter', url:'https://openrouter.ai/api/v1/chat/completions', store:'anonKeyOR' },
-  chutes:     { name:'Chutes',     url:'https://llm.chutes.ai/v1/chat/completions',     store:'anonKeyChutes' },
+  together:   { name:'Together AI', url:'https://api.together.xyz/v1/chat/completions', store:'anonKeyTogether' },
   venice:     { name:'Venice.ai',  url:'https://api.venice.ai/api/v1/chat/completions',  store:'anonKeyVenice' },
   custom:     { name:'Custom/Local', url:'', store:'anonKeyCustom' }
 };
@@ -634,9 +635,11 @@ const MODELS = [
   { p:'openrouter', id:'poolside/laguna-m.1:free',              name:'Laguna M.1',       desc:'Built for coding agents', cat:'Coding', tags:[] },
   { p:'openrouter', id:'openai/gpt-oss-120b:free',              name:'GPT-OSS 120B',     desc:'OpenAI open · code + chat', cat:'Coding', tags:[] },
   // ===== UNRESTRICTED CODING (uncensored, still strong at code) =====
-  { p:'chutes',     id:'deepseek-ai/DeepSeek-V3',               name:'DeepSeek R1',      desc:'Deep reasoning + code · few refusals', cat:'UnCoding', tags:['unc'] },
+  { p:'together',   id:'meta-llama/Llama-3.1-70b-Instruct-Turbo', name:'LLaMA 3.1 70B Turbo', desc:'Fast uncensored coder', cat:'UnCoding', tags:['unc'] },
+  { p:'together',   id:'NousResearch/Nous-Hermes-3-Llama-3.1-70B', name:'Nous-Hermes-3 70B', desc:'Powerful, less restricted', cat:'UnCoding', tags:['unc'] },
   { p:'custom',     id:'__custom_code__',                       name:'My Local Coder',   desc:'Your Ollama dolphin-coder (best, unlimited)', cat:'UnCoding', tags:['unc'] },
   // ===== UNCENSORED CHAT (human, expressive, flirty) =====
+  { p:'together',   id:'mistralai/Mistral-Nemo-Instruct-2407',  name:'Mistral Nemo',     desc:'Fast uncensored chat', cat:'UnChat', tags:['unc'] },
   { p:'openrouter', id:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', name:'Dolphin (Venice)', desc:'Warm, human, flirty · free', cat:'UnChat', tags:['unc'] },
   { p:'openrouter', id:'venice/uncensored:free', name:'Venice Uncensored (alt)', desc:'Same model, alternate name · free', cat:'UnChat', tags:['unc'] },
   { p:'venice',     id:'venice-uncensored',                     name:'Venice Uncensored', desc:'Venice.ai direct · most expressive', cat:'UnChat', tags:['unc'] },
@@ -655,9 +658,9 @@ MODELS.concat(META).forEach(function(m){ if(!MODEL_INDEX[m.id]) MODEL_INDEX[m.id
 
 // Only the TOP picks per mode go into Auto. Auto skips any whose key you have not set.
 const AUTO_CHAINS = {
-  'auto-code'  :['nvidia/nemotron-3-super-120b-a12b:free','moonshotai/kimi-k2.6:free','poolside/laguna-m.1:free','openai/gpt-oss-120b:free','deepseek-ai/DeepSeek-V3','openrouter/free'],
-  'auto-uncode':['deepseek-ai/DeepSeek-V3','cognitivecomputations/dolphin-mistral-24b-venice-edition:free'],
-  'auto-unchat':['cognitivecomputations/dolphin-mistral-24b-venice-edition:free','venice/uncensored:free','venice-uncensored']
+  'auto-code'  :['nvidia/nemotron-3-super-120b-a12b:free','moonshotai/kimi-k2.6:free','poolside/laguna-m.1:free','openai/gpt-oss-120b:free','meta-llama/Llama-3.1-70b-Instruct-Turbo','openrouter/free'],
+  'auto-uncode':['NousResearch/Nous-Hermes-3-Llama-3.1-70B','meta-llama/Llama-3.1-70b-Instruct-Turbo','cognitivecomputations/dolphin-mistral-24b-venice-edition:free'],
+  'auto-unchat':['mistralai/Mistral-Nemo-Instruct-2407','cognitivecomputations/dolphin-mistral-24b-venice-edition:free','venice/uncensored:free','venice-uncensored']
 };
 const AUTO_LABEL = { 'auto-code':'⚡ Auto — Coding', 'auto-uncode':'🔓 Auto — Unrestricted Coding', 'auto-unchat':'💬 Auto — Uncensored Chat' };
 const SECTION_INFO = {
@@ -753,12 +756,12 @@ let deferredInstall=null;  // for the 'Install app' button
 window.onload=function(){
   buildSetupPick(); buildModelDrop(); buildThemeGrid(); buildFontSel(); buildPersonas(); buildBuilder(); buildGroupUI();
   keys.or = localStorage.getItem(PROVIDERS.openrouter.store) || '';
-  keys.chutes = localStorage.getItem(PROVIDERS.chutes.store) || '';
+  keys.together = localStorage.getItem(PROVIDERS.together.store) || '';
   gh.token = localStorage.getItem('anonGhToken')||''; gh.repo = localStorage.getItem('anonGhRepo')||'';
   keys.venice = localStorage.getItem(PROVIDERS.venice.store)||''; keys.custom = localStorage.getItem(PROVIDERS.custom.store)||'';
   customUrl = localStorage.getItem('anonCustomUrl')||''; customModel = localStorage.getItem('anonCustomModel')||'';
   try{ var g=JSON.parse(localStorage.getItem('anonGroup')||'null'); if(g){ groupOn=!!g.on; botA=g.a||botA; botB=g.b||botB; groupRounds=g.rounds||0; } }catch(e){}
-  try{ var en=JSON.parse(localStorage.getItem('anonEnabled')||'{}'); ['or','chutes','venice','custom'].forEach(function(k){ if(en[k]===false) enabled[k]=false; }); }catch(e){}
+  try{ var en=JSON.parse(localStorage.getItem('anonEnabled')||'{}'); ['or','together','venice','custom'].forEach(function(k){ if(en[k]===false) enabled[k]=false; }); }catch(e){}
   currentModel = localStorage.getItem('anonModel') || 'auto-code';
   if(currentModel==='auto-unc') currentModel='auto-unchat'; if(currentModel==='auto-chat') currentModel='auto-code';
   applyTheme(localStorage.getItem('anonTheme')||'anon');
@@ -836,7 +839,7 @@ function refreshKeyStatus(){
 async function testProvider(prov){
   var key = prov==='custom'?keys.custom:keys[prov];
   var url = prov==='custom'?customUrl:PROVIDERS[prov].url;
-  var testModel = {openrouter:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', chutes:'deepseek-ai/DeepSeek-V3', venice:'venice-uncensored', custom:customModel}[prov];
+  var testModel = {openrouter:'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', together:'meta-llama/Llama-3.1-70b-Instruct-Turbo', venice:'venice-uncensored', custom:customModel}[prov];
   if(prov!=='custom' && !key){ showInfo('No key yet','Add a '+PROVIDERS[prov].name+' key first, then test.'); return; }
   if(prov==='custom' && (!customUrl||!customModel)){ showInfo('Set up endpoint','Set your Custom URL and model name first.'); return; }
   showInfo('Testing '+PROVIDERS[prov].name+'...','Sending a quick test to the server. This can take up to 30 seconds on free models — hang tight. The result will pop up automatically.');
@@ -849,13 +852,13 @@ async function testProvider(prov){
     try{ var j=JSON.parse(txt); msg=(j.error&&j.error.message)||(j.choices?'(model replied)':txt); }catch(e){ msg=txt; }
     if(res.ok){ showInfo('\u2705 '+PROVIDERS[prov].name+' WORKS','Status '+res.status+' — your key and a test model both work. If the app still fails on a specific model, that model name may be stale; tell Claude which one.'); return; }
     var hint='';
-    if(/data policy|publication|no endpoints/i.test(msg)){
-      hint='<br><br><b>This is the data-policy block.</b> It must be fixed at the ACCOUNT level (a workspace guardrail can only restrict, never unlock):<br><br>1. Open <b>openrouter.ai/settings/privacy</b><br>2. Under <b>Data Policies</b>, ENABLE free model <b>training</b> AND <b>publication</b><br>3. Save<br><br>If that error names a model, the model may have been renamed/removed — tell Claude to refresh the model list.';
-    } else if(res.status===401){ hint='<br><br>Your key is invalid or expired. Create a new one at openrouter.ai \u2192 Keys.'; }
+    if(/data policy|publication|guardrail|workspace|no endpoints/i.test(msg)){
+      hint='<br><br><b>This is a guardrail block.</b> It must be fixed at the OpenRouter account level:<br><br>1. Go to <b>openrouter.ai</b><br>2. Workspace → Guardrails → Workspace Guardrail → Model & Provider Access<br>3. ENABLE both: "Free endpoints that may train on request data" AND "Free endpoints that may publish prompts"<br>4. Save<br><br>If that error names a model, the model may have been renamed/removed — tell Claude to refresh the model list.';
+    } else if(res.status===401){ hint='<br><br>Your key is invalid or expired. Create a new one at the provider website.'; }
     else if(res.status===402){ hint='<br><br>Needs credits. Add a little balance, or use only :free models.'; }
-    else if(res.status===429){ hint='<br><br>Rate-limited or daily free cap hit. Wait a bit, or add a second provider (Chutes).'; }
+    else if(res.status===429){ hint='<br><br>Rate-limited or daily free cap hit. Wait a bit, or add another provider key.'; }
     showInfo('\u26a0\ufe0f '+PROVIDERS[prov].name+' error '+res.status,'Exact message from the server:<br><br><b>'+esc(String(msg)).slice(0,320)+'</b>'+hint);
-  }catch(e){ if(e.name==='AbortError'){ showInfo('\u23f1\ufe0f Test timed out','The server did not answer within 30 seconds. That free model may be overloaded or down right now. Try again in a moment, or pick a different model.'); } else { showInfo('Connection failed', e.message==='Failed to fetch'?'No internet, or this device cannot reach that endpoint (common with a Custom/Local URL on a different network).':esc(e.message)); } }
+  }catch(e){ if(e.name==='AbortError'){ showInfo('\u23f1\ufe0f Test timed out','The server did not answer within 30 seconds. That model may be overloaded or down right now. Try again in a moment, or pick a different model.'); } else { showInfo('Connection failed', e.message==='Failed to fetch'?'No internet, or this device cannot reach that endpoint (common with a Custom/Local URL on a different network).':esc(e.message)); } }
 }
 function setEnabled(which,on){
   enabled[which]=on; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshKeyStatus(); buildModelDrop();
@@ -868,9 +871,9 @@ function setEnabled(which,on){
     showInfo('\u23f8\ufe0f '+name+' is OFF','The app will now <b>skip '+name+'</b> completely — no requests sent to it. Its models show <b>OFF</b> in the menu. Your key is kept safe; flip the switch back ON anytime to use it again.');
   }
 }
-function refreshEnabledUI(){ ['or','chutes','venice','custom'].forEach(function(k){ var el=document.getElementById('en-'+k); if(el) el.checked=enabled[k]!==false; }); }
+function refreshEnabledUI(){ ['or','together','venice','custom'].forEach(function(k){ var el=document.getElementById('en-'+k); if(el) el.checked=enabled[k]!==false; }); }
 function setKey(which){
-  var map={or:{l:'OpenRouter (sk-or-...)',s:PROVIDERS.openrouter.store},chutes:{l:'Chutes (cpk_...)',s:PROVIDERS.chutes.store},venice:{l:'Venice.ai',s:PROVIDERS.venice.store}};
+  var map={or:{l:'OpenRouter (sk-or-...)',s:PROVIDERS.openrouter.store},together:{l:'Together AI (api-key...)',s:PROVIDERS.together.store},venice:{l:'Venice.ai',s:PROVIDERS.venice.store}};
   var m=map[which]; var v=prompt('Paste your '+m.l+' key:');
   if(v && v.trim()){ keys[which]=v.trim(); localStorage.setItem(m.s, v.trim()); enabled[which]=true; localStorage.setItem('anonEnabled',JSON.stringify(enabled)); refreshEnabledUI(); refreshKeyStatus(); buildModelDrop(); showInfo('\u2705 '+m.l.split(' (')[0]+' key saved','Saved as <b>'+maskKey(v.trim())+'</b> and switched ON.<br><br>Now tap <b>🔍 Test Connection</b> to make sure it actually works before you rely on it.'); }
 }
@@ -883,11 +886,11 @@ function setCustom(part){
 // ── MODEL DROP ──
 function badges(m){ var b=''; if(m.tags&&m.tags.indexOf('unc')>=0) b+='<span class="badge badge-unc">uncensored</span>'; b+='<span class="badge badge-free">free</span>'; return b; }
 function availability(m){
-  var key2enabled={openrouter:'or',chutes:'chutes',venice:'venice',custom:'custom'};
+  var key2enabled={openrouter:'or',together:'together',venice:'venice',custom:'custom'};
   var ek=key2enabled[m.p];
   if(ek && enabled[ek]===false) return {ok:false,t:'⏸️ turned off'};
   if(m.p==='openrouter'){ return keys.or?{ok:true,t:'✅ ready'}:{ok:false,t:'🔑 needs OpenRouter key'}; }
-  if(m.p==='chutes'){ return keys.chutes?{ok:true,t:'✅ ready'}:{ok:false,t:'🔑 needs Chutes key'}; }
+  if(m.p==='together'){ return keys.together?{ok:true,t:'✅ ready'}:{ok:false,t:'🔑 needs Together AI key'}; }
   if(m.p==='venice'){ return keys.venice?{ok:true,t:'✅ ready'}:{ok:false,t:'🔑 needs Venice key'}; }
   if(m.p==='custom'){ return customUrl?{ok:true,t:'✅ ready'}:{ok:false,t:'🖥️ set up your server'}; }
   return {ok:false,t:'⚠️ unknown'};
@@ -1217,24 +1220,24 @@ async function runCompletion(){
   else if(codeCtx) effSys=CODE_PROMPT;
   else effSys='';
   var msgs = effSys ? [{role:'system',content:effSys}].concat(stripDisplay(history)) : stripDisplay(history);
-  var chain, singleFallback=false;
-  // Auto modes use a fallback chain. A SPECIFIC pick uses ONLY that model — no fallback, ever.
-  if(AUTO_CHAINS[currentModel]) chain=AUTO_CHAINS[currentModel].slice();
-  else chain=[currentModel];
-  var answered=false, lastErr='', dataPolicyHit=false, uncWanted=(currentModel==='auto-unchat'||currentModel==='auto-uncode'||(selMod&&selMod.tags&&selMod.tags.indexOf('unc')>=0));
-  for(var ci=0; ci<chain.length && !answered; ci++){
-    var modelId=chain[ci];
-    var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
-    var enMap={openrouter:'or',chutes:'chutes',venice:'venice',custom:'custom'};
-    if(enabled[enMap[prov]]===false){ lastErr=PROVIDERS[prov].name+' is turned off'; continue; }
-    var keyMap={openrouter:keys.or,chutes:keys.chutes,venice:keys.venice,custom:keys.custom};
-    var key=keyMap[prov]||'';
-    var endpoint = prov==='custom' ? customUrl : PROVIDERS[prov].url;
-    var sendModel = (modelId==='__custom__'||modelId==='__custom_code__') ? customModel : modelId;
-    var maxTok = LEN_TOKENS[lenIdx];
-    if(/R1|reason|think|deepseek/i.test(sendModel) && maxTok < 4000) maxTok = 4000;  // reasoning models need room or they return blank
-    if(prov==='custom'){ if(!customUrl){ lastErr='Set your Custom endpoint URL in Settings (Custom / Local)'; continue; } if(!customModel){ lastErr='Set your Custom model name in Settings'; continue; } }
-    else if(!key){ lastErr='No '+PROVIDERS[prov].name+' key set'; continue; }
+   var chain, singleFallback=false;
+   // Auto modes use a fallback chain. A SPECIFIC pick uses ONLY that model — no fallback, ever.
+   if(AUTO_CHAINS[currentModel]) chain=AUTO_CHAINS[currentModel].slice();
+   else chain=[currentModel];
+   var answered=false, lastErr='', dataPolicyHit=false, uncWanted=(currentModel==='auto-unchat'||currentModel==='auto-uncode'||(selMod&&selMod.tags&&selMod.tags.indexOf('unc')>=0));
+   for(var ci=0; ci<chain.length && !answered; ci++){
+     var modelId=chain[ci];
+     var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
+     var enMap={openrouter:'or',together:'together',venice:'venice',custom:'custom'};
+     if(enabled[enMap[prov]]===false){ lastErr=PROVIDERS[prov].name+' is turned off'; continue; }
+     var keyMap={openrouter:keys.or,together:keys.together,venice:keys.venice,custom:keys.custom};
+     var key=keyMap[prov]||'';
+     var endpoint = prov==='custom' ? customUrl : PROVIDERS[prov].url;
+     var sendModel = (modelId==='__custom__'||modelId==='__custom_code__') ? customModel : modelId;
+     var maxTok = LEN_TOKENS[lenIdx];
+     if(/R1|reason|think|deepseek/i.test(sendModel) && maxTok < 4000) maxTok = 4000;  // reasoning models need room or they return blank
+     if(prov==='custom'){ if(!customUrl){ lastErr='Set your Custom endpoint URL in Settings (Custom / Local)'; continue; } if(!customModel){ lastErr='Set your Custom model name in Settings'; continue; } }
+     else if(!key){ lastErr='No '+PROVIDERS[prov].name+' key set'; continue; }
     try {
       var hdrs={'Content-Type':'application/json','HTTP-Referer':'https://anon-ai.local','X-Title':'Anonymous AI'};
       if(key) hdrs['Authorization']='Bearer '+key;
@@ -1244,7 +1247,7 @@ async function runCompletion(){
         signal:abortCtl.signal,
         body:JSON.stringify({model:sendModel,messages:msgs,stream:true,temperature:temperature,max_tokens:maxTok})
       });
-      if(!res.ok){ var er=await res.json().catch(function(){return {};}); lastErr=(er&&er.error&&er.error.message)||('Error '+res.status); if(/data policy|privacy|no endpoints|no allowed providers/i.test(lastErr)) dataPolicyHit=true; continue; }
+      if(!res.ok){ var er=await res.json().catch(function(){return {};}); lastErr=(er&&er.error&&er.error.message)||('Error '+res.status); if(/data policy|privacy|guardrail|workspace|no endpoints|no allowed providers|model.*not.*allowed/i.test(lastErr)) dataPolicyHit=true; continue; }
       var tn=document.getElementById(typId); if(tn) tn.remove();
       var respName=(MODELS.find(function(x){return x.id===modelId;})||MODEL_INDEX[modelId]||{}).name||sendModel;
       var aiId='ai-'+Date.now(); addMsg('ai','',aiId,respName); var full='';
@@ -1288,10 +1291,10 @@ async function runCompletion(){
     }
   }
   var tn2=document.getElementById(typId); if(tn2) tn2.remove();
-  if(dataPolicyHit && uncWanted){ showInfo('Allow free models (account level)','OpenRouter blocks free models until you allow them at the ACCOUNT level. A workspace guardrail can only restrict, never unlock — so this must be set here:<br><br>1. Open <b>openrouter.ai/settings/privacy</b><br>2. Under <b>Data Policies</b>, ENABLE free model <b>training</b> AND <b>publication</b><br>3. Tap <b>Save</b><br><br>Tip: use Settings \u2192 Providers \u2192 <b>🔍 Test Connection</b> to see the exact server message.'); }
-  if(!answered && lastErr!=='__stopped__'){
-    if(lastErr&&(lastErr.toLowerCase().indexOf('provider')>=0||lastErr.toLowerCase().indexOf('data policy')>=0||lastErr.toLowerCase().indexOf('privacy')>=0)){
-      showInfo('Allow free models (account level)','OpenRouter blocks free models until you allow them at the ACCOUNT level. A workspace guardrail can only restrict, never unlock — so this must be set here:<br><br>1. Open <b>openrouter.ai/settings/privacy</b><br>2. Under <b>Data Policies</b>, ENABLE free model <b>training</b> AND <b>publication</b><br>3. Tap <b>Save</b><br><br>Tip: use Settings \u2192 Providers \u2192 <b>🔍 Test Connection</b> to see the exact server message.');
+  if(dataPolicyHit && uncWanted){ showInfo('Allow free models (account level)','OpenRouter blocks free models by default. Fix in account settings:<br><br>1. Go to <b>openrouter.ai</b><br>2. Workspace → Guardrails → Workspace Guardrail → Model & Provider Access<br>3. ENABLE: "Free endpoints that may train on request data"<br>4. ENABLE: "Free endpoints that may publish prompts"<br>5. Save<br><br>Tip: use Settings → Providers → 🔍 Test Connection to see exact server message.'); }
+   if(!answered && lastErr!=='__stopped__'){
+     if(lastErr&&(lastErr.toLowerCase().indexOf('provider')>=0||lastErr.toLowerCase().indexOf('guardrail')>=0||lastErr.toLowerCase().indexOf('data policy')>=0||lastErr.toLowerCase().indexOf('privacy')>=0)){
+       showInfo('Allow free models (account level)','OpenRouter blocks free models by default. Fix in account settings:<br><br>1. Go to <b>openrouter.ai</b><br>2. Workspace → Guardrails → Workspace Guardrail → Model & Provider Access<br>3. ENABLE: "Free endpoints that may train on request data"<br>4. ENABLE: "Free endpoints that may publish prompts"<br>5. Save<br><br>Tip: use Settings → Providers → 🔍 Test Connection to see exact server message.');
     } else if(uncWanted){ showInfo('Uncensored model did not respond','The exact message from the server was:<br><br><b>'+(lastErr||'no response')+'</b><br><br>Most common fixes:<br>1. Turn ON "Free endpoints that may train on request data" in openrouter.ai → Settings → Privacy<br>2. You may have hit today\'s free limit — wait, or add a Chutes key in Settings for a second free source<br>3. Make sure your OpenRouter key is still valid'); }
     else showToast(lastErr||'All free AIs busy — try again');
   } else if(lastErr==='__stopped__'){ showToast('Stopped',true); }
@@ -1330,7 +1333,7 @@ function launchBuild(prompt,label){
 // ── GROUP CHAT ENGINE ──
 function resolveProvider(modelId){
   var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
-  var keyMap={openrouter:keys.or,chutes:keys.chutes,venice:keys.venice,custom:keys.custom};
+  var keyMap={openrouter:keys.or,together:keys.together,venice:keys.venice,custom:keys.custom};
   var key=keyMap[prov]||'';
   var endpoint=prov==='custom'?customUrl:PROVIDERS[prov].url;
   var sendModel=(modelId==='__custom__'||modelId==='__custom_code__')?customModel:modelId;
