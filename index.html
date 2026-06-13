@@ -872,8 +872,8 @@ const TEMPLATES = [
 const STACKS = ['Auto','TypeScript','JavaScript','Python','Go','Rust','Lua'];
 
 // ── STATE ──
-let keys = { or:'', chutes:'', venice:'', custom:'' };
-let enabled = { or:true, chutes:true, venice:true, custom:true };
+let keys = { or:'', together:'', venice:'', custom:'' };
+let enabled = { or:true, together:true, venice:true, custom:true };
 let customUrl='', customModel='';
 let currentModel='auto-code', currentChatId=null, history=[], generating=false, currentStep=1;
 let systemPrompt='', temperature=0.6, lenIdx=2;
@@ -990,8 +990,8 @@ function statusFor(prov){
 }
 function applyStatus(id,prov){ var el=document.getElementById(id); if(!el) return; var st=statusFor(prov); el.textContent=st.t; el.className='key-status '+st.c; }
 function refreshKeyStatus(){
-  applyStatus('ks-or','or'); applyStatus('ks-chutes','chutes'); applyStatus('ks-venice','venice'); applyStatus('ks-custom','custom');
-  setMaskedKey('mk-or', keys.or); setMaskedKey('mk-chutes', keys.chutes); setMaskedKey('mk-venice', keys.venice); setMaskedKey('mk-gh', gh.token);
+  applyStatus('ks-or','or'); applyStatus('ks-together','together'); applyStatus('ks-venice','venice'); applyStatus('ks-custom','custom');
+  setMaskedKey('mk-or', keys.or); setMaskedKey('mk-together', keys.together); setMaskedKey('mk-venice', keys.venice); setMaskedKey('mk-gh', gh.token);
   var cl=document.getElementById('custom-url-label'); if(cl) cl.textContent=customUrl?(customModel||'(model not set)')+' @ '+customUrl.replace(/^https?:\/\//,'').slice(0,28):'Not set';
 }
 async function testProvider(prov){
@@ -1715,7 +1715,7 @@ async function oneShot(modelId, messages, maxTok){
   var r=resolveProvider(modelId);
   if(r.prov==='custom'){ if(!customUrl||!customModel) throw new Error('Custom endpoint not set in Settings'); }
   else if(!r.key) throw new Error('No '+PROVIDERS[r.prov].name+' key');
-  if(enabled[{openrouter:'or',chutes:'chutes',venice:'venice',custom:'custom'}[r.prov]]===false) throw new Error(PROVIDERS[r.prov].name+' is turned OFF');
+  if(enabled[{openrouter:'or',together:'together',venice:'venice',custom:'custom'}[r.prov]]===false) throw new Error(PROVIDERS[r.prov].name+' is turned OFF');
   var hdrs={'Content-Type':'application/json'}; if(r.key) hdrs['Authorization']='Bearer '+r.key;
   var res=await fetch(r.endpoint,{method:'POST',headers:hdrs,body:JSON.stringify({model:r.sendModel,messages:messages,temperature:temperature,max_tokens:maxTok||1200})});
   if(!res.ok){ var er=await res.json().catch(function(){return {};}); throw new Error((er&&er.error&&er.error.message)||('Error '+res.status)); }
