@@ -304,6 +304,12 @@ textarea.ta:focus { border-color:var(--accent); }
 .mini-btn { background:var(--bg); border:1.5px solid var(--border); color:var(--text); border-radius:9px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; width:100%; margin-top:6px; }
 .mini-btn:active { border-color:var(--accent); }
 .mini-btn[onclick*="testProvider"] { border-color:var(--accent); color:var(--accent); font-weight:700; }
+
+/* Update button states */
+.mini-btn.update-available { background:#3a0d0d; border-color:#ff6b6b; color:#ff6b6b; }
+.mini-btn.update-available:active { background:#4a1a1a; border-color:#ff8a8a; }
+.mini-btn.up-to-date { background:#06160e; border-color:#2bff88; color:#2bff88; }
+.mini-btn.up-to-date:active { background:#0a2514; border-color:#3affb0; }
 .chip { display:inline-block; background:var(--bg); border:1.5px solid var(--border); border-radius:16px; padding:7px 12px; font-size:12px; margin:0 6px 6px 0; cursor:pointer; }
 .chip.active { border-color:var(--accent); color:var(--accent); }
 .stat { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
@@ -395,6 +401,10 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
       <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Auto-Fallback</div><div class="feature-desc">Switches when one fails</div></div>
     </div>
     <button class="step-btn" onclick="goStep(2)">Begin →</button>
+    <div id="setup-update-row" style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="mini-btn" id="setup-update-btn" onclick="checkUpdateFromSetup()" style="display:none"></button>
+      <span id="setup-version-info" style="font-size:11px;color:var(--muted);display:none;align-self:center"></span>
+    </div>
     <div class="step-dots"><div class="dot-i active"></div><div class="dot-i"></div><div class="dot-i"></div></div>
   </div>
 
@@ -952,7 +962,8 @@ window.onload=function(){
     var d=localStorage.getItem('anonDraft'); if(d){ var mi=document.getElementById('msg-input'); mi.value=d; grow(mi); }
   }
   var rm=document.getElementById('ready-mark'); if(rm) rm.textContent='// READY · v'+APP_VERSION;
-  setTimeout(autoVersionCheck,1200);
+  // Show setup update button if on setup screen
+  setTimeout(function(){ checkUpdateFromSetup(); var btn=document.getElementById('setup-update-btn'); if(btn) btn.style.display='inline-flex'; }, 500);
   setupInstallPrompt();
 };
 
@@ -1275,6 +1286,47 @@ function checkUpdate(){
   showToast('Checking for updates...');
   var url=location.href.split('?')[0]+'?v='+Date.now();
   fetch(url,{cache:'no-store'}).then(function(r){ if(r.ok){ showToast('Updated! Reloading...',true); setTimeout(function(){ location.replace(url); },800); } else showToast('Could not reach update'); }).catch(function(){ showToast('No connection'); });
+}
+function checkUpdateFromSetup(){
+  var btn=document.getElementById('setup-update-btn');
+  var info=document.getElementById('setup-version-info');
+  btn.textContent='⟳ Checking...';
+  btn.disabled=true;
+  var url=location.href.split('?')[0]+'?v='+Date.now();
+  fetch(url,{cache:'no-store'}).then(function(r){
+    if(r.ok){
+      var html=r.text().then(function(text){
+        var m=text.match(/APP_VERSION='([\d.]+)'/);
+        var serverVer=m?m[1]:null;
+        var currentVer=APP_VERSION;
+        if(serverVer && serverVer!==currentVer){
+          btn.textContent='⬇ Update to '+serverVer;
+          btn.className='mini-btn update-available';
+          btn.onclick=checkUpdate;
+          info.textContent='v'+currentVer+' → '+serverVer+' available';
+          info.style.color='#ff6b6b';
+        }else{
+          btn.textContent='✓ Up to date ('+currentVer+')';
+          btn.className='mini-btn up-to-date';
+          info.textContent='Running latest v'+currentVer;
+          info.style.color='#2bff88';
+        }
+        info.style.display='inline';
+      });
+    }else{
+      btn.textContent='⚠ Could not check';
+      btn.className='mini-btn';
+      info.textContent='Could not reach update server';
+      info.style.color='#ffb454';
+      info.style.display='inline';
+    }
+  }).catch(function(){
+    btn.textContent='⚠ No connection';
+    btn.className='mini-btn';
+    info.textContent='No internet connection';
+    info.style.color='#ffb454';
+    info.style.display='inline';
+  });
 }
 
 // ── CHAT STORAGE ──
