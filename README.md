@@ -19,6 +19,10 @@
 
 ---
 
+IMPORTANT: If you're trying to use free, uncensored models (Dolphin / Venice / DeepSeek, etc.) — the most common reason they appear blocked is an OpenRouter account-level guardrail setting. See "OpenRouter guardrails" below for a single-step fix.
+
+---
+
 ## 🤔 What is it? (no jargon)
 
 A chat app you keep on your phone that talks to powerful AIs — and **builds entire apps for you**.
@@ -56,15 +60,14 @@ You don't write code. You say *"build me a ___"* and it writes every file, ready
 
 **Get a free key** 🔑 — [openrouter.ai](https://openrouter.ai) → Sign Up → Keys → Create Key.
 
-**⚠️ One-time unlock for free/uncensored models** (this is the step everyone misses):
-1. openrouter.ai → **Workspace → Guardrails → Workspace Guardrail → Model & Provider Access**
-2. Turn **ON**: *"Free endpoints that may train on request data"*
-3. Turn **ON**: *"Free endpoints that may publish prompts"*
-4. **Tap Save** (changes don't apply until you Save)
+IMPORTANT: OpenRouter guardrails (single-step fix)
+1. Sign into https://openrouter.ai
+2. Go to Workspace → Guardrails → Workspace Guardrail → Model & Provider Access
+3. Turn ON: "Free endpoints that may train on request data"
+4. Turn ON: "Free endpoints that may publish prompts"
+5. Tap Save
 
-Without this, uncensored models like Dolphin/Venice come back blocked. With it, they work.
-
-**Install it** 📲 — open the app in Chrome → menu (⋮) → **Add to Home Screen**. Now it's fullscreen, like any app.
+Without this, uncensored models like Dolphin/Venice will be blocked at the account level. If you still see blocks after this, use the app's Settings → OpenRouter → Test button (the app will show the exact server message and a helpful hint).
 
 ---
 
@@ -88,7 +91,15 @@ flowchart LR
     style I fill:#ffb454,color:#180f00
 ```
 
-You ask → it picks the best free AI → if that one's down it tries another → you get a complete app → preview it, download it, or push it to GitHub. **No dead ends. No terminal. No payments.**
+You ask → it picks the best free AI → if that one's down it tries another → you get a complete app → preview it, download it, or push it to GitHub. **No dead ends. No terminal. No payments**
+
+---
+
+## Troubleshooting quick-check (if free models appear blocked)
+1. Ensure OpenRouter guardrails are enabled (see above).
+2. In the app: Settings → Providers → Test each provider. The app will show: OK, NO KEY, rate-limited, or a data-policy block message.
+3. If you see: "data policy" or "publication" in the test output, that's an account-level block — enable the guardrail.
+4. Try a second provider (Chutes) or use a Custom / Local endpoint (Ollama on your PC or a free Kaggle GPU).
 
 ---
 
@@ -97,7 +108,7 @@ You ask → it picks the best free AI → if that one's down it tries another �
 | Brain | Best for | Free? |
 |---|---|:--:|
 | ⚡ **Auto — Coding** | Building apps & scripts | ✅ |
-| 🔓 **Auto — Uncensored** | When other AIs refuse | ✅ |
+| 🔓 **Auto — Uncensored** | When other AIs refuse | ✅ (when guardrails allow) |
 | 💬 **Auto — Chatting** | Questions & ideas | ✅ |
 | 🖥️ **Your Custom / Local** | Unlimited via your PC or a free GPU | ✅ |
 
