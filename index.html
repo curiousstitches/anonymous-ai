@@ -945,7 +945,7 @@ window.onload=function(){
   var pcBtn=document.getElementById('project-context'); if(pcBtn) pcBtn.checked=projectContextEnabled;
   refreshKeyStatus(); refreshGh(); refreshEnabledUI(); buildModelDrop();  // rebuild now that keys are loaded
 
-  if(keys.or || keys.chutes){
+  if(keys.or || keys.together){
     document.getElementById('setup').style.display='none';
     document.getElementById('app').style.display='flex';
     updateHdr(); newChat();
