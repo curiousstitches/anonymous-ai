@@ -51,6 +51,42 @@ body.fx-msgfx .msg { animation:msgPop 0.28s cubic-bezier(0.34,1.5,0.64,1); }
 @keyframes msgPop { from{opacity:0;transform:scale(0.9) translateY(8px);} to{opacity:1;transform:scale(1) translateY(0);} }
 body.fx-scan::after { content:''; position:fixed; inset:0; z-index:2; pointer-events:none; background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(43,255,136,0.018) 3px,transparent 4px); }
 
+/* Landing page / Setup screen enhancements */
+.landing-gradient { position:fixed; inset:0; z-index:-1; background:radial-gradient(ellipse at 30% 20%, rgba(43,255,136,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(179,136,255,0.06) 0%, transparent 50%), var(--bg); }
+.landing-grid { position:fixed; inset:0; z-index:-1; background-image: linear-gradient(rgba(43,255,136,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(43,255,136,0.02) 1px, transparent 1px); background-size: 60px 60px; animation: gridMove 20s linear infinite; }
+@keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px, 60px); } }
+.floating-orb { position:fixed; border-radius:50%; filter:blur(60px); opacity:0.4; animation: float 15s ease-in-out infinite; pointer-events:none; }
+.floating-orb:nth-child(1) { width:300px; height:300px; background:var(--accent); top:-50px; left:-50px; animation-delay:0s; }
+.floating-orb:nth-child(2) { width:200px; height:200px; background:#b388ff; bottom:-30px; right:-30px; animation-delay:-5s; }
+.floating-orb:nth-child(3) { width:150px; height:150px; background:#ff6b6b; top:50%; left:50%; animation-delay:-10s; }
+@keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 25% { transform: translate(30px,-20px) scale(1.1); } 50% { transform: translate(-20px,30px) scale(0.9); } 75% { transform: translate(10px,10px) scale(1.05); } }
+
+/* Enhanced setup step animations */
+.setup-step.active { display:flex; animation: stepIn 0.5s cubic-bezier(0.34,1.5,0.64,1); }
+@keyframes stepIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+.setup-step:not(.active) { display:none; }
+
+/* Hero setup step */
+.setup-hero { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; }
+.setup-hero .brandmark { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { transform: scale(1); opacity:0.8; } 50% { transform: scale(1.05); opacity:1; } }
+.setup-hero .step-title { background:linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+/* Feature cards in setup */
+.feature-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:20px 0; width:100%; max-width:380px; }
+.feature-card { flex:1; min-width:100px; background:var(--surface2); border:1px solid var(--border); border-radius:16px; padding:20px 16px; text-align:center; transition:transform 0.2s, border-color 0.2s; }
+.feature-card:hover { transform: translateY(-4px); border-color:var(--accent); }
+.feature-icon { font-size:28px; margin-bottom:8px; }
+.feature-title { font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px; }
+.feature-desc { font-size:11px; color:var(--muted2); line-height:1.4; }
+
+/* Provider badges */
+.provider-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-family:var(--mono); font-weight:600; }
+.provider-badge.or { background:rgba(43,255,136,0.15); color:var(--accent); }
+.provider-badge.tg { background:rgba(179,136,255,0.15); color:#b388ff; }
+.provider-badge.vc { background:rgba(255,180,84,0.15); color:var(--warn); }
+.provider-badge.cs { background:rgba(100,200,255,0.15); color:#64c8ff; }
+
 /* SETUP */
 #setup { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; overflow-y:auto; z-index:300; }
 .setup-step { display:none; flex-direction:column; align-items:center; padding:46px 24px 30px; min-height:100%; text-align:center; }
@@ -170,6 +206,40 @@ body.fx-scan::after { content:''; position:fixed; inset:0; z-index:2; pointer-ev
 #toast { position:fixed; bottom:84px; left:50%; transform:translateX(-50%); background:#1a0a0a; border:1px solid #ff4444; color:#ff8585; padding:10px 18px; border-radius:18px; font-size:13px; opacity:0; transition:opacity .3s; z-index:999; pointer-events:none; max-width:90vw; text-align:center; }
 #toast.show { opacity:1; }
 #toast.ok { background:#06160e; border-color:var(--accent); color:var(--accent); }
+
+/* Auto mode transparency log */
+.auto-log-msg .bubble { background:var(--surface2); border:1px solid var(--accent); }
+.auto-log { font-family:var(--mono); font-size:11px; }
+.auto-log-title { color:var(--accent); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+.auto-log-item { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; margin:3px 0; background:var(--surface); }
+.auto-log-num { color:var(--muted); width:18px; }
+.auto-log-name { flex:1; color:var(--text); }
+.auto-log-status { font-size:10px; }
+.auto-log-status.waiting { color:var(--muted); }
+.auto-log-status.trying { color:var(--accent); }
+.auto-log-status.success { color:var(--accent); }
+.auto-log-status.failed { color:#ff6b6b; }
+.auto-log-status.skipped { color:var(--warn); }
+
+/* Guardrail badge */
+.guardrail-badge { font-size:16px; vertical-align:middle; cursor:help; }
+.guardrail-badge.enabled { filter:drop-shadow(0 0 6px var(--accent)); }
+.guardrail-badge.blocked { filter:drop-shadow(0 0 6px #ff6b6b); }
+
+/* Enhanced stat row */
+.stat { display:flex; justify-content:space-between; padding:6px 10px; background:var(--surface); border-radius:8px; margin:4px 0; font-family:var(--mono); font-size:12px; }
+.stat .sl { color:var(--muted2); }
+.stat .sv { color:var(--accent); font-weight:700; }
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+
+/* Provider stat card */
+.provider-stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
+.provider-stat .ps-name { font-weight:700; color:var(--text); margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.provider-stat .ps-row { display:flex; justify-content:space-between; font-size:11px; font-family:var(--mono); margin:2px 0; }
+.provider-stat .ps-label { color:var(--muted2); }
+.provider-stat .ps-value { color:var(--accent); font-weight:600; }
+.provider-stat .ps-bar { height:4px; background:var(--surface2); border-radius:2px; margin-top:6px; overflow:hidden; }
+.provider-stat .ps-fill { height:100%; background:var(--accent); border-radius:2px; transition:width .3s; }
 
 /* panels */
 .overlay { position:fixed; inset:0; background:rgba(0,0,0,.62); z-index:90; opacity:0; pointer-events:none; transition:opacity .25s; }
@@ -302,11 +372,21 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
 
 <!-- SETUP -->
 <div id="setup">
-  <div class="setup-step active" id="st-1">
+  <div class="landing-gradient"></div>
+  <div class="landing-grid"></div>
+  <div class="floating-orb"></div>
+  <div class="floating-orb"></div>
+  <div class="floating-orb"></div>
+  <div class="setup-step active setup-hero" id="st-1">
     <div style="margin-top:18px" class="brandmark">// PRIVATE · UNRESTRICTED · YOURS</div>
     <div class="step-icon">🕶️</div>
     <div class="step-title">Anonymous <span class="redact">AI</span></div>
     <p class="step-body">A no-leash AI coding partner. Build whole apps, talk to uncensored models, keep everything on your device. Free.</p>
+    <div class="feature-row">
+      <div class="feature-card"><div class="feature-icon">🔨</div><div class="feature-title">Build Anything</div><div class="feature-desc">Full projects, every file</div></div>
+      <div class="feature-card"><div class="feature-icon">🔓</div><div class="feature-title">Unrestricted</div><div class="feature-desc">No refusals, no limits</div></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Auto-Fallback</div><div class="feature-desc">Switches when one fails</div></div>
+    </div>
     <button class="step-btn" onclick="goStep(2)">Begin →</button>
     <div class="step-dots"><div class="dot-i active"></div><div class="dot-i"></div><div class="dot-i"></div></div>
   </div>
@@ -314,12 +394,12 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
   <div class="setup-step" id="st-2">
     <div class="step-icon">🔑</div>
     <div class="step-title">Connect a provider</div>
-    <p class="step-body">Paste at least one free key. <strong>OpenRouter</strong> is the main one. <strong>Chutes</strong> is an optional second source of uncensored models.</p>
+    <p class="step-body">Paste at least one free key. <strong>OpenRouter</strong> is the main one. <strong>Together AI</strong> is a fast backup. <strong>Venice</strong> is optional premium.</p>
     <div class="step-label">OpenRouter key — required</div>
     <input type="password" id="key-or" class="step-input" placeholder="sk-or-v1-..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
-    <div class="step-label">Chutes key — optional</div>
-    <input type="password" id="key-chutes" class="step-input" placeholder="cpk_... (leave blank to skip)" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
-    <div class="tip-box"><p><strong>Get OpenRouter free:</strong> openrouter.ai → Sign Up → Keys → Create Key. Then in <strong>Settings → Privacy</strong>, turn ON "Free endpoints that may train on request data" so free models work.</p></div>
+    <div class="step-label">Together AI key — optional</div>
+    <input type="password" id="key-together" class="step-input" placeholder="api-key... (leave blank to skip)" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+    <div class="tip-box"><p><strong>Get OpenRouter free:</strong> openrouter.ai → Sign Up → Keys → Create Key. Then in <strong>Settings → Guardrails → Workspace Guardrail → Model & Provider Access</strong>, enable both training + publication toggles.</p></div>
     <button class="step-btn" onclick="saveKeys()">Save & Continue →</button>
     <div class="step-dots"><div class="dot-i"></div><div class="dot-i active"></div><div class="dot-i"></div></div>
   </div>
@@ -428,7 +508,7 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
       <div class="sec-t">⚡ Providers</div>
       <div class="row-d" style="margin:0 4px 10px">Each switch turns a provider <b>ON</b> or <b>OFF</b>. <b>ON</b> = the app can use it. <b>OFF</b> = ignored (your key is kept). <b>NO KEY</b> = paste a key first.</div>
       <div class="row">
-        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main free AI source.<br><br>1. Get a key: open <b>openrouter.ai/keys</b> → Create Key<br>2. Paste it here with Set/Change Key<br>3. IMPORTANT: to use free/uncensored models, go to <b>openrouter.ai</b> → Workspace → Guardrails → Workspace Guardrail → Model & Provider Access → enable both training + publication toggles → Save<br><br>Use 🔍 Test Connection to confirm it works.')">i</i><span class="key-status" id="ks-or">off</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
+        <div class="row-lbl"><span class="l">OpenRouter</span><i class="info-i" onclick="showInfo('OpenRouter','Your main free AI source.<br><br>1. Get a key: open <b>openrouter.ai/keys</b> → Create Key<br>2. Paste it here with Set/Change Key<br>3. IMPORTANT: to use free/uncensored models, go to <b>openrouter.ai</b> → Workspace → Guardrails → Workspace Guardrail → Model & Provider Access → enable both training + publication toggles → Save<br><br>Use 🔍 Test Connection to confirm it works.')">i</i><span class="key-status" id="ks-or">off</span><span class="guardrail-badge" id="gr-or" style="margin-left:8px;display:none">🛡️</span><label class="toggle" style="margin-left:6px"><input type="checkbox" id="en-or" onchange="setEnabled('or',this.checked)"><span class="tr"></span></label></div>
         <div class="masked-key" id="mk-or">no key set</div><button class="mini-btn" onclick="setKey('or')">Set / Change Key</button><button class="mini-btn" onclick="testProvider('or')">🔍 Test Connection</button>
       </div>
       <div class="row">
@@ -561,6 +641,32 @@ button:active, .pill:active, .quick:active, .swatch:active, .fx-opt:active, .chi
         <div class="stat"><span class="sl">Words processed</span><span class="sv" id="st-tok">0</span></div>
         <div class="stat"><span class="sl">Files built</span><span class="sv" id="st-files">0</span></div>
         <div class="stat"><span class="sl">Cost</span><span class="sv">$0.00</span></div>
+      </div>
+      <div class="stat-grid" id="provider-stats">
+        <div class="provider-stat">
+          <div class="ps-name">OpenRouter <span id="gr-or-mini" style="font-size:10px;font-weight:400;margin-left:4px"></span></div>
+          <div class="ps-row"><span class="ps-label">Requests</span><span class="ps-value" id="st-or-req">0</span></div>
+          <div class="ps-row"><span class="ps-label">Words</span><span class="ps-value" id="st-or-tok">0</span></div>
+          <div class="ps-bar"><div class="ps-fill" id="st-or-bar" style="width:0%"></div></div>
+        </div>
+        <div class="provider-stat">
+          <div class="ps-name">Together AI</div>
+          <div class="ps-row"><span class="ps-label">Requests</span><span class="ps-value" id="st-tg-req">0</span></div>
+          <div class="ps-row"><span class="ps-label">Words</span><span class="ps-value" id="st-tg-tok">0</span></div>
+          <div class="ps-bar"><div class="ps-fill" id="st-tg-bar" style="width:0%"></div></div>
+        </div>
+        <div class="provider-stat">
+          <div class="ps-name">Venice.ai</div>
+          <div class="ps-row"><span class="ps-label">Requests</span><span class="ps-value" id="st-vc-req">0</span></div>
+          <div class="ps-row"><span class="ps-label">Words</span><span class="ps-value" id="st-vc-tok">0</span></div>
+          <div class="ps-bar"><div class="ps-fill" id="st-vc-bar" style="width:0%"></div></div>
+        </div>
+        <div class="provider-stat">
+          <div class="ps-name">Custom / Local</div>
+          <div class="ps-row"><span class="ps-label">Requests</span><span class="ps-value" id="st-cs-req">0</span></div>
+          <div class="ps-row"><span class="ps-label">Words</span><span class="ps-value" id="st-cs-tok">0</span></div>
+          <div class="ps-bar"><div class="ps-fill" id="st-cs-bar" style="width:0%"></div></div>
+        </div>
       </div>
     </div>
 
@@ -751,6 +857,14 @@ let groupOn=false, botA={model:'auto-unchat',name:'Nova'}, botB={model:'auto-cod
 let recognizing=false, recog=null;
 let abortCtl=null;  // lets us STOP the AI mid-answer
 let deferredInstall=null;  // for the 'Install app' button
+let autoSwitchLog=[];  // track model switching attempts
+let sessionStats={
+  msgs:0, tokens:0, files:0,
+  modelsUsed:{},
+  providersUsed:{or:{req:0,tokens:0}, together:{req:0,tokens:0}, venice:{req:0,tokens:0}, custom:{req:0,tokens:0}},
+  switches:0,
+  startTime:Date.now()
+};
 
 // ── BOOT ──
 window.onload=function(){
@@ -802,10 +916,10 @@ window.onload=function(){
 function goStep(n){ document.getElementById('st-'+currentStep).classList.remove('active'); currentStep=n; document.getElementById('st-'+currentStep).classList.add('active'); }
 function saveKeys(){
   var or=document.getElementById('key-or').value.trim();
-  var ch=document.getElementById('key-chutes').value.trim();
-  if(!or && !ch){ showToast('Paste at least one key'); return; }
+  var tg=document.getElementById('key-together').value.trim();
+  if(!or && !tg){ showToast('Paste at least one key'); return; }
   if(or){ keys.or=or; localStorage.setItem(PROVIDERS.openrouter.store,or); }
-  if(ch){ keys.chutes=ch; localStorage.setItem(PROVIDERS.chutes.store,ch); }
+  if(tg){ keys.together=tg; localStorage.setItem(PROVIDERS.together.store,tg); }
   refreshKeyStatus(); goStep(3);
 }
 function buildSetupPick(){
@@ -850,14 +964,27 @@ async function testProvider(prov){
     clearTimeout(to);
     var txt=await res.text(); var msg;
     try{ var j=JSON.parse(txt); msg=(j.error&&j.error.message)||(j.choices?'(model replied)':txt); }catch(e){ msg=txt; }
-    if(res.ok){ showInfo('\u2705 '+PROVIDERS[prov].name+' WORKS','Status '+res.status+' — your key and a test model both work. If the app still fails on a specific model, that model name may be stale; tell Claude which one.'); return; }
+    if(res.ok){
+      showInfo('\u2705 '+PROVIDERS[prov].name+' WORKS','Status '+res.status+' — your key and a test model both work. If the app still fails on a specific model, that model name may be stale; tell Claude which one.');
+      if(prov==='openrouter'){
+        var badge=document.getElementById('gr-or');
+        if(badge){ badge.textContent='🛡️ Guardrails OK'; badge.className='guardrail-badge enabled'; badge.style.display='inline-block'; }
+      }
+      return;
+    }
     var hint='';
+    var isGuardrail=false;
     if(/data policy|publication|guardrail|workspace|no endpoints/i.test(msg)){
+      isGuardrail=true;
       hint='<br><br><b>This is a guardrail block.</b> It must be fixed at the OpenRouter account level:<br><br>1. Go to <b>openrouter.ai</b><br>2. Workspace → Guardrails → Workspace Guardrail → Model & Provider Access<br>3. ENABLE both: "Free endpoints that may train on request data" AND "Free endpoints that may publish prompts"<br>4. Save<br><br>If that error names a model, the model may have been renamed/removed — tell Claude to refresh the model list.';
     } else if(res.status===401){ hint='<br><br>Your key is invalid or expired. Create a new one at the provider website.'; }
     else if(res.status===402){ hint='<br><br>Needs credits. Add a little balance, or use only :free models.'; }
     else if(res.status===429){ hint='<br><br>Rate-limited or daily free cap hit. Wait a bit, or add another provider key.'; }
     showInfo('\u26a0\ufe0f '+PROVIDERS[prov].name+' error '+res.status,'Exact message from the server:<br><br><b>'+esc(String(msg)).slice(0,320)+'</b>'+hint);
+    if(prov==='openrouter' && isGuardrail){
+      var badge=document.getElementById('gr-or');
+      if(badge){ badge.textContent='🛡️ Guardrails BLOCKING'; badge.className='guardrail-badge blocked'; badge.style.display='inline-block'; }
+    }
   }catch(e){ if(e.name==='AbortError'){ showInfo('\u23f1\ufe0f Test timed out','The server did not answer within 30 seconds. That model may be overloaded or down right now. Try again in a moment, or pick a different model.'); } else { showInfo('Connection failed', e.message==='Failed to fetch'?'No internet, or this device cannot reach that endpoint (common with a Custom/Local URL on a different network).':esc(e.message)); } }
 }
 function setEnabled(which,on){
@@ -1004,7 +1131,22 @@ function setCustomBg(input){ var file=input.files[0]; if(!file) return; var read
 function removeCustomBg(){ localStorage.removeItem('anonCustomBg'); document.getElementById('custom-bg').style.display='none'; showToast('Background removed',true); }
 
 // ── INFO / USAGE / UPDATE ──
-function updateUsage(){ document.getElementById('st-msgs').textContent=sessionMsgs; document.getElementById('st-tok').textContent=sessionTokens.toLocaleString(); document.getElementById('st-files').textContent=sessionFiles; }
+function updateUsage(){ document.getElementById('st-msgs').textContent=sessionMsgs; document.getElementById('st-tok').textContent=sessionTokens.toLocaleString(); document.getElementById('st-files').textContent=sessionFiles; 
+  // Provider stats
+  var totalReq = sessionStats.providersUsed.or.req + sessionStats.providersUsed.together.req + sessionStats.providersUsed.venice.req + sessionStats.providersUsed.custom.req;
+  var providers = ['or','together','venice','custom'];
+  providers.forEach(function(p){
+    var req = sessionStats.providersUsed[p].req;
+    var tok = sessionStats.providersUsed[p].tokens;
+    var bar = req > 0 && totalReq > 0 ? Math.round((req/totalReq)*100) : 0;
+    var reqEl = document.getElementById('st-'+p+'-req');
+    var tokEl = document.getElementById('st-'+p+'-tok');
+    var barEl = document.getElementById('st-'+p+'-bar');
+    if(reqEl) reqEl.textContent = req;
+    if(tokEl) tokEl.textContent = tok.toLocaleString();
+    if(barEl) barEl.style.width = bar+'%';
+  });
+}
 function showInfo(t,b){ document.getElementById('info-t').textContent=t; document.getElementById('info-b').innerHTML=b; document.getElementById('info-pop').classList.add('show'); }
 function closeInfo(){ document.getElementById('info-pop').classList.remove('show'); }
 function showUpdateBanner(msg){ if(msg) document.getElementById('ut').textContent=msg; document.getElementById('ubanner').classList.add('show'); }
@@ -1200,6 +1342,10 @@ async function send(){
   var content=buildMessageContent(text);
   history.push({role:'user',content:content,_display:displayText});
   sessionMsgs++; sessionTokens+=Math.ceil((typeof content==='string'?content.length:text.length)/4);
+  // Track model used for this message
+  if(currentModel && sessionStats.modelsUsed){
+    sessionStats.modelsUsed[currentModel] = (sessionStats.modelsUsed[currentModel]||0) + 1;
+  }
   pendingFiles=[]; renderAttach();
   await runCompletion();
 }
@@ -1225,19 +1371,28 @@ async function runCompletion(){
    if(AUTO_CHAINS[currentModel]) chain=AUTO_CHAINS[currentModel].slice();
    else chain=[currentModel];
    var answered=false, lastErr='', dataPolicyHit=false, uncWanted=(currentModel==='auto-unchat'||currentModel==='auto-uncode'||(selMod&&selMod.tags&&selMod.tags.indexOf('unc')>=0));
+   
+   // --- AUTO MODE TRANSPARENCY LOG ---
+   var autoLog = [];
+   var autoLogId = 'auto-log-'+Date.now();
+   if(AUTO_CHAINS[currentModel] && chain.length > 1){
+     showAutoLog(autoLogId, chain);
+   }
+   
    for(var ci=0; ci<chain.length && !answered; ci++){
      var modelId=chain[ci];
      var prov=(MODEL_INDEX[modelId]&&MODEL_INDEX[modelId].p)||'openrouter';
      var enMap={openrouter:'or',together:'together',venice:'venice',custom:'custom'};
-     if(enabled[enMap[prov]]===false){ lastErr=PROVIDERS[prov].name+' is turned off'; continue; }
+     if(enabled[enMap[prov]]===false){ lastErr=PROVIDERS[prov].name+' is turned off'; updateAutoLog(autoLogId, ci, 'skipped', 'Provider disabled'); continue; }
      var keyMap={openrouter:keys.or,together:keys.together,venice:keys.venice,custom:keys.custom};
      var key=keyMap[prov]||'';
      var endpoint = prov==='custom' ? customUrl : PROVIDERS[prov].url;
      var sendModel = (modelId==='__custom__'||modelId==='__custom_code__') ? customModel : modelId;
      var maxTok = LEN_TOKENS[lenIdx];
      if(/R1|reason|think|deepseek/i.test(sendModel) && maxTok < 4000) maxTok = 4000;  // reasoning models need room or they return blank
-     if(prov==='custom'){ if(!customUrl){ lastErr='Set your Custom endpoint URL in Settings (Custom / Local)'; continue; } if(!customModel){ lastErr='Set your Custom model name in Settings'; continue; } }
-     else if(!key){ lastErr='No '+PROVIDERS[prov].name+' key set'; continue; }
+     if(prov==='custom'){ if(!customUrl){ lastErr='Set your Custom endpoint URL in Settings (Custom / Local)'; updateAutoLog(autoLogId, ci, 'skipped', 'No endpoint URL'); continue; } if(!customModel){ lastErr='Set your Custom model name in Settings'; updateAutoLog(autoLogId, ci, 'skipped', 'No model name'); continue; } }
+     else if(!key){ lastErr='No '+PROVIDERS[prov].name+' key set'; updateAutoLog(autoLogId, ci, 'skipped', 'No API key'); continue; }
+    updateAutoLog(autoLogId, ci, 'trying', 'Connecting...');
     try {
       var hdrs={'Content-Type':'application/json','HTTP-Referer':'https://anon-ai.local','X-Title':'Anonymous AI'};
       if(key) hdrs['Authorization']='Bearer '+key;
@@ -1247,11 +1402,20 @@ async function runCompletion(){
         signal:abortCtl.signal,
         body:JSON.stringify({model:sendModel,messages:msgs,stream:true,temperature:temperature,max_tokens:maxTok})
       });
-      if(!res.ok){ var er=await res.json().catch(function(){return {};}); lastErr=(er&&er.error&&er.error.message)||('Error '+res.status); if(/data policy|privacy|guardrail|workspace|no endpoints|no allowed providers|model.*not.*allowed/i.test(lastErr)) dataPolicyHit=true; continue; }
+      if(!res.ok){ var er=await res.json().catch(function(){return {};}); lastErr=(er&&er.error&&er.error.message)||('Error '+res.status); if(/data policy|privacy|guardrail|workspace|no endpoints|no allowed providers|model.*not.*allowed/i.test(lastErr)) dataPolicyHit=true; updateAutoLog(autoLogId, ci, 'failed', lastErr); continue; }
       var tn=document.getElementById(typId); if(tn) tn.remove();
       var respName=(MODELS.find(function(x){return x.id===modelId;})||MODEL_INDEX[modelId]||{}).name||sendModel;
       var aiId='ai-'+Date.now(); addMsg('ai','',aiId,respName); var full='';
       document.getElementById('hdr-model').textContent=respName;  // header reflects who ACTUALLY answered
+      updateAutoLog(autoLogId, ci, 'success', 'Answered');
+      hideAutoLog(autoLogId);
+      // Track provider usage
+      var pMap={openrouter:'or', together:'together', venice:'venice', custom:'custom'};
+      var pKey=pMap[prov];
+      if(pKey && sessionStats.providersUsed[pKey]){
+        sessionStats.providersUsed[pKey].req++;
+        sessionStats.providersUsed[pKey].tokens+=Math.ceil(full.length/4);
+      }
       var reader=res.body.getReader(), dec=new TextDecoder();
       var buf='', reasonBuf='';
       var handleLine=function(line){
@@ -1301,6 +1465,35 @@ async function runCompletion(){
   generating=false; abortCtl=null;
   var sb2=document.getElementById('send-btn'); sb2.disabled=false; sb2.textContent='↑'; sb2.title='Send';
   scrollBot();
+}
+function showAutoLog(id, chain){
+  var html='<div id="'+id+'" class="auto-log"><div class="auto-log-title">⚡ Auto Mode — Trying models in order:</div>';
+  chain.forEach(function(m,i){
+    var name = (MODELS.find(function(x){return x.id===m;})||MODEL_INDEX[m]||{name:m}).name||m;
+    html+='<div class="auto-log-item" data-idx="'+i+'"><span class="auto-log-num">'+(i+1)+'.</span><span class="auto-log-name">'+name+'</span><span class="auto-log-status waiting">⏳ Waiting</span></div>';
+  });
+  html+='</div>';
+  var msgWrap=document.getElementById('messages');
+  var logDiv=document.createElement('div');
+  logDiv.className='msg ai auto-log-msg';
+  logDiv.innerHTML=html;
+  msgWrap.appendChild(logDiv);
+  scrollBot();
+}
+function updateAutoLog(id, idx, status, detail){
+  var item=document.querySelector('#'+id+' .auto-log-item[data-idx="'+idx+'"]');
+  if(!item) return;
+  var statusEl=item.querySelector('.auto-log-status');
+  statusEl.className='auto-log-status '+status;
+  var icons={trying:'🔄', success:'✅', failed:'❌', skipped:'⏭️'};
+  var labels={trying:'Trying...', success:'Answered!', failed:'Failed: '+detail, skipped:'Skipped: '+detail};
+  statusEl.innerHTML=icons[status]+' '+labels[status];
+}
+function hideAutoLog(id){
+  setTimeout(function(){
+    var el=document.getElementById(id);
+    if(el){ var msg=el.closest('.msg'); if(msg) msg.remove(); }
+  }, 3000);
 }
 function stripDisplay(h){ return h.map(function(m){ return {role:m.role,content:m.content}; }); }
 function setSendStop(on){ var sb=document.getElementById('send-btn'); if(!sb) return; if(on){ sb.textContent='\u25a0'; sb.title='Stop'; sb.disabled=false; } else { sb.textContent='\u2191'; sb.title='Send'; sb.disabled=false; } }

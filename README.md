@@ -1,161 +1,121 @@
-<div align="center">
-
 # 🕶️ Anonymous AI
 
 ### *Tell it what to build. Get the whole thing. From your phone. Free.*
 
-![Live](https://img.shields.io/badge/●_live-2bff88?style=for-the-badge&labelColor=07080a)
-![Cost](https://img.shields.io/badge/cost-%240_forever-2bff88?style=for-the-badge&labelColor=07080a)
-![No code](https://img.shields.io/badge/code_needed-none-ffb454?style=for-the-badge&labelColor=07080a)
-![Mobile](https://img.shields.io/badge/built_for-your_phone-7c6fff?style=for-the-badge&labelColor=07080a)
+**🚀 [Open the App →](https://curiousstitches.github.io/anonymous-ai/)**
+
+---
+
+## What Is This?
+
+A chat app you keep on your phone that builds **entire apps** for you.
+
+You say: *"Build me a weather dashboard"*  
+It writes: Every file — HTML, CSS, JS, package.json, README — complete and runnable.
+
+You tap **Push to GitHub** → It's live. No terminal. No account. No fees.
+
+---
+
+## Why It's Different
+
+| Feature | What It Means for You |
+|---------|----------------------|
+| **🔨 Builder Mode** | Pick a template or describe anything → get a complete project |
+| **⚡ Smart Auto** | Picks the best AI, switches if one breaks — you never hit a dead end |
+| **🔓 Unrestricted** | Models that answer when normal AIs refuse (mods, exploits, edgy code) |
+| **🖥️ Your Own AI** | Point it at your PC (Ollama) for unlimited, private, free AI |
+| **🚀 GitHub Push** | Save any build to GitHub in one tap |
+| **▶️ Live Preview** | Built a web app? Watch it run on your phone instantly |
+| **📦 Downloads** | Save one file or the whole project as .zip |
+| **📎 Send Files** | Upload code/screenshots for the AI to read |
+| **🎤 Voice** | Talk to type, it reads answers aloud |
+| **⛔ Stop Button** | Cut off a long answer anytime |
+| **🎨 Make It Yours** | 7 themes, fonts, sizes, animated backgrounds |
+| **💾 Never Lose Work** | Auto-saves, searchable, draft backup |
+
+---
+
+## 3 Taps to Start
 
 ```
-// PRIVATE · UNRESTRICTED · YOURS
+1️⃣  Open the app      →  2️⃣  Paste a free key  →  3️⃣  Build
 ```
 
-**[🚀 Open the app →](https://curiousstitches.github.io/anonymous-ai/)**
-
-</div>
+**Get a free key:** [openrouter.ai](https://openrouter.ai) → Sign Up → Keys → Create Key
 
 ---
 
-IMPORTANT: If you're trying to use free, uncensored models (Dolphin / Venice / DeepSeek, etc.) — the most common reason they appear blocked is an OpenRouter account-level guardrail setting. See "OpenRouter guardrails" below for a single-step fix.
+## ⚠️ IMPORTANT: OpenRouter Guardrails
+
+**Free models won't work until you do this once:**
+
+1. Sign into **openrouter.ai**
+2. Go to **Workspace** → **Guardrails** → **Workspace Guardrail** → **Model & Provider Access**
+3. Turn ON: **"Free endpoints that may train on request data"**
+4. Turn ON: **"Free endpoints that may publish prompts"**
+5. Tap **Save**
+
+Without this, uncensored models (Dolphin, Venice, DeepSeek) are blocked at the account level.
+
+If you still see blocks, use the app's **Settings → Providers → Test** button — it shows the exact server message and a fix.
 
 ---
 
-## 🤔 What is it? (no jargon)
+## Quick Links
 
-A chat app you keep on your phone that talks to powerful AIs — and **builds entire apps for you**.
-
-You don't write code. You say *"build me a ___"* and it writes every file, ready to use. Like texting a genius programmer who never sleeps, never charges you, and doesn't refuse to help.
-
-> 💡 **One file. No accounts. No fees.** Open it, paste a free key, start building.
-
----
-
-## ✨ Everything it does
-
-| | Feature | In plain English |
-|:--:|---|---|
-| 🔨 | **Builder Mode** | Pick a template or describe anything → get a **complete project**, every file |
-| ⚡ | **Smart Auto** | Don't know which AI? It picks the best one **and switches if one breaks** |
-| 🔓 | **Uncensored** | Models that answer directly when normal AIs refuse |
-| 🖥️ | **Use your own AI** | Point it at your PC or a free GPU for **unlimited** free AI |
-| 🚀 | **GitHub push** | Save any build to GitHub in one tap — **no terminal** |
-| ▶️ | **Live Preview** | Built an HTML app? **Watch it run** on your phone instantly |
-| 📦 | **Downloads** | Save one file, or a **whole project as a .zip** |
-| 📎 | **Send files** | Upload code or screenshots for the AI to read |
-| 🎤 | **Voice** | Talk to type · 🔊 it can read answers aloud |
-| ⛔ | **Stop button** | Cut off a long answer anytime |
-| 🎨 | **Make it yours** | Themes, fonts, colors, animated backgrounds, 3D effects |
-| 💾 | **Never lose work** | Chats auto-save, searchable, with a typed-draft backup |
+| What You Need | Where |
+|--------------|-------|
+| **2-minute setup** | [QUICKSTART.md](QUICKSTART.md) |
+| **Full docs** | [/docs folder](docs/) |
+| **What changed** | [CHANGELOG.md](CHANGELOG.md) |
+| **Owner history** | [OWNER_LOG.md](OWNER_LOG.md) |
+| **Deploy your own** | [docs/DEPLOY.md](docs/DEPLOY.md) |
+| **Host on your domain** | [docs/HOSTING.md](docs/HOSTING.md) |
+| **Run on your PC (Ollama)** | [docs/PC-CODE-EXECUTION.md](docs/PC-CODE-EXECUTION.md) |
+| **Free GPU (Kaggle)** | [docs/kaggle-ollama.ipynb](docs/kaggle-ollama.ipynb) |
 
 ---
 
-## 🚀 Start in 3 taps
+## Current AI Providers (Auto-Fallback Chain)
 
 ```
-  1️⃣  Open the app  →  2️⃣  Paste a free key  →  3️⃣  Build
+OpenRouter (primary) → Together AI (fast backup) → Venice.ai (premium) → Your Local Ollama (unlimited)
 ```
 
-**Get a free key** 🔑 — [openrouter.ai](https://openrouter.ai) → Sign Up → Keys → Create Key.
-
-IMPORTANT: OpenRouter guardrails (single-step fix)
-1. Sign into https://openrouter.ai
-2. Go to Workspace → Guardrails → Workspace Guardrail → Model & Provider Access
-3. Turn ON: "Free endpoints that may train on request data"
-4. Turn ON: "Free endpoints that may publish prompts"
-5. Tap Save
-
-Without this, uncensored models like Dolphin/Venice will be blocked at the account level. If you still see blocks after this, use the app's Settings → OpenRouter → Test button (the app will show the exact server message and a helpful hint).
+| Provider | Status | Best For |
+|----------|--------|----------|
+| **OpenRouter** | ✅ Primary | Stable coding, most free models |
+| **Together AI** | ✅ Backup | Speed, Nous-Hermes, LLaMA 3.1 uncensored |
+| **Venice.ai** | ✅ Optional | Best uncensored chat, privacy-first |
+| **Ollama (Local)** | ✅ Ultimate | Unlimited, private, your models |
 
 ---
 
-## 🧠 How it works
+## Unrestricted vs Uncensored — Know the Difference
 
-```mermaid
-flowchart LR
-    A([📱 You]) -->|"build me an app"| B[🕶️ Anonymous AI]
-    B --> C{⚡ Smart Auto}
-    C -->|coding| D[🧑‍💻 Coding AI]
-    C -->|uncensored| E[🔓 Uncensored AI]
-    C -->|your own| F[🖥️ Your PC / GPU]
-    D --> G[📦 Complete project]
-    E --> G
-    F --> G
-    G -->|one tap| H([🚀 Push to GitHub])
-    G -->|one tap| I([▶️ Preview / 💾 Download])
-    style B fill:#2bff88,color:#04140a
-    style G fill:#7c6fff,color:#fff
-    style H fill:#ffb454,color:#180f00
-    style I fill:#ffb454,color:#180f00
-```
-
-You ask → it picks the best free AI → if that one's down it tries another → you get a complete app → preview it, download it, or push it to GitHub. **No dead ends. No terminal. No payments**
+| Section | What You Get |
+|---------|--------------|
+| **🧑‍💻 Coding** | Accurate, clean code for apps, bugs, scripts |
+| **🔓 Unrestricted Coding** | Mods, game hacks, exploits, reverse engineering — no moral lectures |
+| **💬 Uncensored Chat** | Adult talk, roleplay, companions — no filters, no judgment |
 
 ---
 
-## Troubleshooting quick-check (if free models appear blocked)
-1. Ensure OpenRouter guardrails are enabled (see above).
-2. In the app: Settings → Providers → Test each provider. The app will show: OK, NO KEY, rate-limited, or a data-policy block message.
-3. If you see: "data policy" or "publication" in the test output, that's an account-level block — enable the guardrail.
-4. Try a second provider (Chutes) or use a Custom / Local endpoint (Ollama on your PC or a free Kaggle GPU).
+## Built With
+
+- **Single file** — `index.html` contains everything (HTML + CSS + JS)
+- **No build step** — Open in browser, works instantly
+- **GitHub Pages ready** — Push to deploy
+- **PWA** — Install to home screen, works offline
+- **Mobile-first** — Built for phones, scales to desktop
 
 ---
 
-## 🤖 The AIs you can use
+## License
 
-| Brain | Best for | Free? |
-|---|---|:--:|
-| ⚡ **Auto — Coding** | Building apps & scripts | ✅ |
-| 🔓 **Auto — Uncensored** | When other AIs refuse | ✅ (when guardrails allow) |
-| 💬 **Auto — Chatting** | Questions & ideas | ✅ |
-| 🖥️ **Your Custom / Local** | Unlimited via your PC or a free GPU | ✅ |
-
-> 🛡️ Backed by **multiple free sources** (OpenRouter, Chutes, Venice). If one's down, Auto switches so you're never stuck.
+MIT — Do whatever you want.
 
 ---
 
-## 🛠️ Builder templates
-
-<div align="center">
-
-| 🌐 Web | 📱 App / Tool | 🎮 Game / Fun | 🐍 Script |
-|---|---|---|---|
-| Landing Page | PWA (installable) | Roblox System | Python CLI |
-| React SPA | Chrome Extension | Canvas Game | FastAPI |
-| REST API | Discord Bot | Idle / Clicker | Web Scraper |
-| Full-Stack App | Telegram Bot | | Automation |
-
-</div>
-
-*…or describe your own and pick the language.*
-
----
-
-## 🆓 Want unlimited uncensored AI?
-
-Run the model yourself — free, private, no limits. See **HOSTING.md**:
-- 🥇 **Your PC + Ollama** — unlimited, $0 forever
-- 🥈 **Kaggle free GPU** — bigger models, works anywhere
-- 🥉 **Venice free tier** — zero setup, just a key
-
----
-
-## 🔒 Your privacy
-
-- 🔑 Keys stay **on your phone only**
-- 💬 Chats save **on your device**, not a server
-- ⚠️ Free models *can* learn from what you type — don't paste passwords or private info into them
-
----
-
-<div align="center">
-
-### Made for builders who don't write code. 🕶️
-
-```
-anon█ai
-```
-
-</div>
+*Built by someone who got tired of AI refusing to help.*

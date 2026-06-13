@@ -1,140 +1,110 @@
-# Quick Start Guide
+# Anonymous AI — Quick Start
 
-Get Anonymous AI working in 2 minutes.
-
-## Step 1: Open the App
-
-Go to: **[curiousstitches.github.io/anonymous-ai](https://curiousstitches.github.io/anonymous-ai)**
-
-The entire app runs in your browser. No installation needed.
+**Open the app → Paste a key → Build anything. Free forever.**
 
 ---
 
-## Step 2: Enable Free Uncensored Models (Required)
+## 2-Minute Setup
 
-### Get an OpenRouter Key
+### 1. Open the App
+Go to: **curiousstitches.github.io/anonymous-ai**
 
-1. Go to **[openrouter.ai](https://openrouter.ai)**
-2. Click **Sign Up** (free, no credit card)
-3. Go to **Keys** → Click **Create Key**
-4. Copy the key
+That's it. No install, no account, no terminal.
 
-### Enable Guardrails (Critical!)
+---
 
-Without this step, free uncensored models will be blocked:
+### 2. Get a Free Key (Required)
 
-1. At OpenRouter, go to **Workspace** (top left)
-2. Click **Guardrails** → **Workspace Guardrail**
-3. Choose **Model & Provider Access**
-4. Turn **ON**: "Free endpoints that may train on request data"
-5. Turn **ON**: "Free endpoints that may publish prompts"
+**Option A: OpenRouter (Main — Best Models)**
+1. Go to **openrouter.ai** → Sign Up (free, no card)
+2. Click **Keys** → **Create Key** → Copy it
+3. **CRITICAL:** Go to **Workspace** → **Guardrails** → **Workspace Guardrail** → **Model & Provider Access**
+4. Turn ON: **"Free endpoints that may train on request data"**
+5. Turn ON: **"Free endpoints that may publish prompts"**
 6. Click **Save**
 
-### Paste Your Key into the App
+**Option B: Together AI (Fast Backup — Great Uncensored Models)**
+1. Go to **together.ai** → Sign Up (free)
+2. Create API Key → Copy it
 
-1. In Anonymous AI, go to **Settings** (⚙️)
-2. Find **OpenRouter**
-3. Click **Set / Change Key**
-4. Paste your key
-5. Click **Test Connection** to verify it works
-
----
-
-## Step 3: Pick a Model & Start Building
-
-1. Click the model picker (top of chat)
-2. Choose **⚡ Auto — Coding** for app building
-3. Type anything: `"build me a todo app"` or `"create a weather dashboard"`
-4. The AI generates a complete, runnable project—every file
+**Option C: Venice.ai (Optional — Best Uncensored Chat)**
+1. Go to **venice.ai** → Sign Up (free, no card)
+2. Create API Key → Copy it
 
 ---
 
-## Optional: Add a Second AI Source
-
-If OpenRouter is slow or you hit limits:
-
-### Together AI (Fast)
-
-1. Sign up free at **[together.ai](https://together.ai)**
-2. Create an API key
-3. In app: Settings → **Together AI** → Set your key
-4. Test it
-
-### Venice.ai (Best Uncensored)
-
-1. Sign up free at **[venice.ai](https://venice.ai)** (no card required)
-2. Create an API key
-3. In app: Settings → **Venice.ai** → Set your key
-4. Test it
+### 3. Paste Your Key(s)
+1. Open the app → Tap **⚙️ Settings** (top right)
+2. Tap **Set / Change Key** for each provider you have
+3. Paste your key → Tap **🔍 Test Connection**
+4. Green check = you're live
 
 ---
 
-## Using Your Own AI (Unlimited)
+### 4. Start Building
+Tap the model picker (top center) → Choose:
 
-Point the app at any OpenAI-compatible AI server:
+| Mode | Best For |
+|------|----------|
+| **⚡ Auto — Coding** | Build apps, fix bugs, write scripts |
+| **🔓 Auto — Unrestricted Coding** | Mods, game hacks, edgy code |
+| **💬 Auto — Uncensored Chat** | Adult talk, roleplay, companions |
 
-### Local PC (Easiest)
+Then just type: **"Build me a todo app"** or **"Create a Discord bot"**
 
-1. Download and install **[Ollama](https://ollama.ai)**
-2. Run: `ollama run dolphin-mistral` (uncensored model)
-3. Ollama will be at: `http://localhost:11434/v1/chat/completions`
-4. In app: Settings → **Custom/Local** → set this URL
-5. Model name: `dolphin-mistral`
-6. Test it
-
-### Free GPU (Kaggle)
-
-1. Get a free GPU at **[kaggle.com](https://kaggle.com)** (free tier)
-2. Set up port forwarding (ngrok or similar)
-3. Same steps as above, but with your ngrok URL
+The AI writes every file. You tap **🚀 Push to GitHub** → Done.
 
 ---
 
-## Troubleshooting
+## Pro Tips
 
-### "Model blocked" Error?
-→ Check you enabled both guardrails at OpenRouter (see Step 2)
-
-### "No key set" Error?
-→ Add a key for that provider in Settings
-
-### Model is slow?
-→ Add Together AI key as a backup (Settings → Together AI)
-
-### Unsure which model to pick?
-→ Use **Auto** modes—they pick the best one and switch if needed
+- **Auto modes** auto-switch if a model fails — you see exactly which one answered
+- **🔨 Builder button** (hammer icon) = full project templates
+- **📎 Paperclip** = upload code/screenshots for AI to read
+- **🎤 Mic button** = talk instead of type
+- **🎨 Themes** = 7 color schemes in Settings → Appearance
+- **💾 Auto-save** = never lose a chat
+- **📱 Install** = Add to home screen for fullscreen app feel
 
 ---
 
-## What You Can Do
+## Unrestricted vs Uncensored
 
-| Task | What to Pick |
-|------|--------------|
-| Build apps/websites | **⚡ Auto — Coding** |
-| Get uncensored responses | **🔓 Auto — Unrestricted Coding** or **💬 Auto— Uncensored Chat** |
-| Just chat | **💬 Auto — Uncensored Chat** |
-| Don't know | **⚡ Auto — Coding** (default) |
-
----
-
-## Features
-
-- 🎨 **Themes**: Settings → Appearance (7+ themes)
-- 🎤 **Voice**: Speak instead of typing
-- 📎 **Upload files**: Share code/screenshots with AI
-- 🚀 **Push to GitHub**: Save projects in one tap
-- 💾 **Auto-save**: Chats saved automatically
-- ▶️ **Live preview**: Run HTML apps instantly
+| Section | What It Means |
+|---------|---------------|
+| **🧑‍💻 Coding** | Normal coding help — accurate, clean code |
+| **🔓 Unrestricted Coding** | Mods, exploits, game hacks, reverse engineering — no moral lectures |
+| **💬 Uncensored Chat** | Adult conversation, roleplay, companions — no filters |
 
 ---
 
-## Still Stuck?
+## If Something's Not Working
 
-1. Check the **[full README](README.md)** for deep info
-2. Look at **[deployment guides](docs/DEPLOY.md)** for hosting
-3. See **[API research](docs/API_RESEARCH_FINDINGS.md)** for provider details
-4. Run the **Test Connection** button (⚙️ → Providers) to see exact errors
+| Problem | Fix |
+|---------|-----|
+| "Model blocked" | You missed step 2 → Enable BOTH guardrails at OpenRouter |
+| "No key set" | Paste a key in Settings |
+| Slow / timing out | Add Together AI key as backup |
+| Model gives empty reply | It's overloaded → Auto retries next model |
 
 ---
 
-That's it! You're ready to build.
+## Your Own Unlimited AI (Optional)
+
+Run **Ollama** on your PC → `ollama run dolphin-mistral`
+Then in Settings → **Custom / Local** → Set URL: `http://localhost:11434/v1/chat/completions`
+Model: `dolphin-mistral`
+
+**Unlimited. Free. Private. Uncensored.**
+
+---
+
+## That's It
+
+**No accounts. No fees. No tracking. Your keys stay on your device.**
+
+Build something cool.
+
+---
+
+*Questions? Check the full docs in the `/docs` folder or open Settings → Help in the app.*
