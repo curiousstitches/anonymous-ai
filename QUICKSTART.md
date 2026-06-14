@@ -23,9 +23,9 @@ That's it. No install, no account, no terminal.
 5. Turn ON: **"Free endpoints that may publish prompts"**
 6. Click **Save**
 
-**Option B: Together AI (Fast Backup — Great Uncensored Models)**
-1. Go to **together.ai** → Sign Up (free)
-2. Create API Key → Copy it
+**Option B: Poolside.ai (Primary for Coding)**
+1. Go to **platform.poolside.ai** → Sign Up (free)
+2. Go to **API Keys** → Create Key → Copy it
 
 **Option C: Venice.ai (Optional — Best Uncensored Chat)**
 1. Go to **venice.ai** → Sign Up (free, no card)
@@ -46,9 +46,9 @@ Tap the model picker (top center) → Choose:
 
 | Mode | Best For |
 |------|----------|
-| **⚡ Auto — Coding** | Build apps, fix bugs, write scripts |
-| **🔓 Auto — Unrestricted Coding** | Mods, game hacks, edgy code |
-| **💬 Auto — Uncensored Chat** | Adult talk, roleplay, companions |
+| **⚡ Top Connected Coding** | Build apps, fix bugs, write scripts |
+| **🔓 Top Connected Unrestricted** | Mods, game hacks, edgy code |
+| **💬 Top Connected Uncensored Chat** | Adult talk, roleplay, companions |
 
 Then just type: **"Build me a todo app"** or **"Create a Discord bot"**
 
@@ -84,7 +84,7 @@ The AI writes every file. You tap **🚀 Push to GitHub** → Done.
 |---------|-----|
 | "Model blocked" | You missed step 2 → Enable BOTH guardrails at OpenRouter |
 | "No key set" | Paste a key in Settings |
-| Slow / timing out | Add Together AI key as backup |
+| Slow / timing out | Add Poolside.ai key as primary provider |
 | Model gives empty reply | It's overloaded → Auto retries next model |
 
 ---

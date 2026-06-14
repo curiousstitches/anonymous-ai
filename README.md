@@ -80,13 +80,13 @@ If you still see blocks, use the app's **Settings → Providers → Test** butto
 ## Current AI Providers (Auto-Fallback Chain)
 
 ```
-OpenRouter (primary) → Together AI (fast backup) → Venice.ai (premium) → Your Local Ollama (unlimited)
+Poolside.ai (primary for coding) → OpenRouter (free models) → Venice.ai (premium) → Your Local Ollama (unlimited)
 ```
 
 | Provider | Status | Best For |
 |----------|--------|----------|
-| **OpenRouter** | ✅ Primary | Stable coding, most free models |
-| **Together AI** | ✅ Backup | Speed, Nous-Hermes, LLaMA 3.1 uncensored |
+| **Poolside.ai** | ✅ Primary | Advanced coding models, laguna-m.1 |
+| **OpenRouter** | ✅ Primary | Free uncensored models, 100+ options |
 | **Venice.ai** | ✅ Optional | Best uncensored chat, privacy-first |
 | **Ollama (Local)** | ✅ Ultimate | Unlimited, private, your models |
 

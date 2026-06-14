@@ -73,7 +73,7 @@ Appears as a sliding bar above the input when in Live Coding mode:
 - Auto mode transparency log
 - Provider usage stats with progress bars
 - Guardrail status badge
-- Together AI provider (replaced Chutes)
+- Poolside.ai provider (replaced Together AI)
 - Nemotron 3 Ultra in models
 - OpenRouter guardrails UI fix
 - Project restructure

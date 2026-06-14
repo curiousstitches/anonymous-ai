@@ -47,7 +47,7 @@
 - Landing page with animated gradient/orbs
 - Plain English docs (QUICKSTART, OWNER_LOG, README)
 - Project restructure (/docs, /config)
-- Together AI provider (replaced Chutes)
+- Poolside.ai provider (replaced Together AI)
 - OpenRouter guardrails UI fix
 - Nemotron 3 Ultra in "Other" category
 
